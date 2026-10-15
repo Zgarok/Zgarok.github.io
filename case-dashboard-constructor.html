@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Конструктор дашборда: виджет из Google-таблицы без адресов ячеек — Сергей Степанов</title><meta name="description" content="Пошаговый сценарий из четырёх шагов вместо пяти полей с адресами ячеек, свой показатель — в диалоге с ИИ. С дашбордом клиенты остаются в 2,25 раза дольше."><link rel="canonical" href="https://zgarok.github.io/case-dashboard-constructor.html"><meta property="og:type" content="website"><meta property="og:locale" content="ru_RU"><meta property="og:site_name" content="Сергей Степанов — продуктовый дизайнер"><meta property="og:title" content="Конструктор дашборда: виджет из Google-таблицы без адресов ячеек — Сергей Степанов"><meta property="og:description" content="Пошаговый сценарий из четырёх шагов вместо пяти полей с адресами ячеек, свой показатель — в диалоге с ИИ. С дашбордом клиенты остаются в 2,25 раза дольше."><meta property="og:url" content="https://zgarok.github.io/case-dashboard-constructor.html"><meta property="og:image" content="https://zgarok.github.io/img/og-dashboard.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+
+/* Кейс: узкая колонка текста, схемы и прототип — на всю ширину */
+:root{
+  --bg:#FFFFFF; --surface:#F8FAFC; --surface-2:#F1F5F9;
+  --ink:#0F172A; --text:#1E293B; --muted:#64748B; --line:#E2E8F0;
+  --accent:#1D23CD; --accent-soft:#E7E8F9; --accent-line:#797DE2;
+  --pos:#047857; --pos-bg:#ECFDF5; --night:#060728;
+  --sans:'Golos Text','PT Root UI',system-ui,sans-serif;
+  --mono:'Roboto Mono',ui-monospace,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.6 var(--sans)}
+a{color:var(--accent);text-underline-offset:3px}
+a:hover{color:#4B50D8}
+.wrap{max-width:760px;margin:0 auto;padding-inline:max(20px,env(safe-area-inset-left,0px)) max(20px,env(safe-area-inset-right,0px))}
+.wide{max-width:1240px;margin:0 auto;padding-inline:max(20px,env(safe-area-inset-left,0px)) max(20px,env(safe-area-inset-right,0px))}
+
+/* hero */
+.hero{padding-block:72px 40px}
+.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+h1{margin:16px 0 0;font-size:clamp(34px,5.4vw,56px);line-height:1.08;font-weight:600;color:var(--ink);letter-spacing:-.02em;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+.lead{margin:24px 0 0;font-size:clamp(18px,2.2vw,21px);line-height:1.5;color:var(--text);max-width:680px}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;margin-top:40px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.facts div{background:var(--bg);padding:16px 18px}
+.facts dt{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:6px 0 0;font-size:15px;line-height:1.4;color:var(--ink)}
+.scores{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
+.score{border:1px solid var(--line);border-radius:12px;padding:18px}
+.score b{display:block;font:500 28px/1.1 var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.score b span{color:var(--accent)}
+.score small{display:block;margin-top:8px;font-size:14px;line-height:1.4;color:var(--muted)}
+
+/* sections */
+section{padding-block:56px}
+section + section{border-top:1px solid var(--line)}
+.sec-label{display:flex;align-items:baseline;gap:12px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.sec-label i{font-style:normal;font-family:var(--mono);color:var(--accent)}
+h2{margin:12px 0 0;font-size:clamp(26px,3.4vw,34px);line-height:1.2;font-weight:600;color:var(--ink);letter-spacing:-.01em;text-wrap:balance}
+h3{margin:36px 0 0;font-size:20px;line-height:1.3;font-weight:600;color:var(--ink)}
+p{margin:16px 0 0}
+ul.list{margin:16px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+ul.list li{position:relative;padding-left:22px}
+ul.list li::before{content:"";position:absolute;left:2px;top:.72em;width:8px;height:2px;background:var(--accent)}
+.todo{background:#FFFBEB;border:1px dashed #F59E0B;border-radius:6px;padding:1px 6px;color:#B45309;font-size:.92em}
+
+.callout{margin-top:24px;border-left:0;background:var(--surface);border-radius:12px;padding:20px 22px}
+.callout p:first-child{margin-top:0}
+.quote{font-size:19px;line-height:1.5;color:var(--ink)}
+
+.hyp{display:grid;gap:12px;margin-top:20px}
+.hyp div{border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.hyp b{color:var(--accent);font-weight:600}
+
+.insights{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}
+.insights div{border:1px solid var(--line);border-radius:12px;padding:18px 20px;font-size:16px;line-height:1.5}
+.insights span{display:block;font:500 12px/1 var(--mono);color:var(--muted);margin-bottom:10px}
+
+.changes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+.changes>div{border:1px solid var(--line);border-radius:12px;padding:18px 20px;min-width:0}
+.changes b{color:var(--ink)}
+.changes .list{font-size:15px;line-height:1.5}
+.nsm{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:12px;margin-top:16px}
+.nsm>div{border:1px solid var(--line);border-radius:12px;padding:16px 18px;font-size:14px;line-height:1.5;color:var(--muted);min-width:0}
+.nsm b{display:block;margin-bottom:6px;font-size:16px;color:var(--ink)}
+.nsm .on{border-color:var(--accent-line);background:#F8F9FE}
+.nsm .on b{color:var(--accent)}
+.decisions{display:grid;gap:0;margin-top:20px;border-top:1px solid var(--line)}
+.decisions div{display:grid;grid-template-columns:200px minmax(0,1fr);gap:24px;padding:18px 0;border-bottom:1px solid var(--line)}
+.decisions dt{font-weight:600;color:var(--ink);line-height:1.4}
+.decisions dd{margin:0;min-width:0}
+
+/* schemes */
+.figure{padding-block:8px 8px}
+.figure figcaption{margin-top:12px;font-size:14px;color:var(--muted)}
+.scheme{position:relative;width:100%;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#fff;height:calc(var(--h) * 1px)}
+.scheme-inner{position:absolute;left:0;top:0;transform-origin:0 0}
+.scheme.noscale{overflow-x:auto;height:auto}
+.scheme.noscale .scheme-inner{position:static}
+
+/* prototype */
+.proto{margin-top:8px;padding:0;background:var(--night);color:#fff}
+.proto-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding:18px max(20px,env(safe-area-inset-left,0px)) 18px max(20px,env(safe-area-inset-right,0px))}
+.proto-bar strong{font-size:17px;font-weight:600}
+.proto-bar span{font-size:14px;color:#A3A5EB}
+.proto-bar a{margin-left:auto;color:#fff;font-size:14px;border:1px solid #4B50D8;border-radius:8px;padding:8px 14px;text-decoration:none}
+.proto-bar a:hover{background:#181CA5;color:#fff}
+.proto iframe{display:block;width:100%;height:min(88vh,920px);min-height:560px;border:0;background:#fff}
+
+/* results */
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}
+.metrics div{border:1px dashed var(--accent-line);border-radius:12px;padding:16px 18px;font-size:15px;line-height:1.45}
+.metrics b{display:block;font:500 12px/1 var(--mono);letter-spacing:.04em;color:var(--accent);margin-bottom:8px;text-transform:uppercase}
+
+table.tests{width:100%;margin-top:20px;border-collapse:collapse;font-size:15px}
+table.tests th{text-align:left;font-weight:500;color:var(--muted);font-size:13px;padding:10px 12px;border-bottom:1px solid var(--line)}
+table.tests td{padding:14px 12px;border-bottom:1px solid var(--line)}
+table.tests td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+table.tests td.n b{color:var(--pos);font-weight:500}
+.tbl{overflow-x:auto}
+
+.contrib{margin-top:20px;display:grid;gap:10px;counter-reset:c}
+.contrib li{list-style:none;display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;align-items:baseline}
+.contrib li::before{counter-increment:c;content:counter(c,decimal-leading-zero);font:500 14px/1 var(--mono);color:var(--accent)}
+.contrib{padding:0}
+
+footer{padding-block:48px 72px;color:var(--muted);font-size:14px}
+
+@media (max-width:720px){
+  body{font-size:16px}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .scores,.insights,.metrics,.changes,.nsm{grid-template-columns:minmax(0,1fr)}
+  .decisions div{grid-template-columns:minmax(0,1fr);gap:6px}
+  .proto-bar a{margin-left:0}
+  .proto iframe{height:80vh;min-height:520px}
+}
+@media (prefers-reduced-motion:no-preference){ a{transition:color .15s} }
+
+/* дополнения для кейса дашборда */
+.toplink{display:inline-block;margin-bottom:28px;font-size:14px;color:var(--muted);text-decoration:none}
+.toplink:hover{color:var(--accent)}
+.shot{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surface)}
+.shot img{display:block;width:100%;height:auto}
+.fig{margin:28px 0 0}
+.fig figcaption{margin-top:10px;font-size:14px;line-height:1.45;color:var(--muted)}
+.cover{padding-top:8px;padding-bottom:16px}
+.sub{display:flex;align-items:baseline;gap:12px;margin-top:44px}
+.sub i{font-style:normal;font:500 13px/1 var(--mono);color:var(--accent)}
+.sub h3{margin:0}
+.paid{margin-top:16px;background:var(--surface);border-radius:12px;padding:14px 18px;font-size:16px}
+.paid b{color:var(--ink)}
+table.opts{width:100%;margin-top:20px;border-collapse:collapse;font-size:14px;line-height:1.45;min-width:720px}
+table.opts th{text-align:left;font-weight:500;color:var(--muted);font-size:13px;padding:10px 12px;border-bottom:1px solid var(--line)}
+table.opts td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
+table.opts td:first-child{font-weight:600;color:var(--ink)}
+table.opts tr.pick td{background:#F8F9FE}
+.tag{display:inline-block;font-size:12px;line-height:1;padding:5px 8px;border-radius:999px;white-space:nowrap}
+.tag.no{background:#FEF2F2;color:#B91C1C}.tag.mid{background:var(--surface-2);color:var(--muted)}.tag.yes{background:var(--accent-soft);color:var(--accent)}
+.rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}
+.rules>div{border:1px solid var(--line);border-radius:12px;padding:18px 20px;min-width:0}
+.rules .k{font:500 12px/1.3 var(--mono);color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
+.rules h3{margin-top:10px;font-size:18px}
+.rules p{font-size:15px;line-height:1.5}
+.rules .list{font-size:15px}
+.loop{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.loop span{border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px;background:var(--bg)}
+.loop span.on{border-color:var(--accent-line);color:var(--accent)}
+@media (max-width:720px){.rules{grid-template-columns:minmax(0,1fr)}}
+#options .tbl{width:min(1080px,calc(100vw - 40px));margin-left:calc(50% - min(540px,50vw - 20px))}
+table.opts{table-layout:fixed}
+table.opts th:nth-child(1){width:18%}table.opts th:nth-child(2),table.opts th:nth-child(3){width:21%}table.opts th:nth-child(4){width:24%}table.opts th:nth-child(5){width:16%}
+.tag{white-space:normal;line-height:1.3}
+</style>
+</head>
+<body>
+
+<header class="wrap hero">
+  <a class="toplink" href="index.html">← Все работы</a>
+  <div class="eyebrow">Нескучные финансы · продуктовый дизайн · 2026</div>
+  <h1>Конструктор дашборда: <em>виджет из Google-таблицы</em> без адресов ячеек</h1>
+  <p class="lead">Финансовый директор собирает клиенту оперативный дашборд из таблицы, которую уже ведёт. Вместо пяти полей с адресами ячеек — пошаговый сценарий из четырёх шагов, а нестандартный показатель собирается в диалоге с ИИ.</p>
+  <dl class="facts">
+    <div><dt>Роль</dt><dd>Продуктовый дизайнер проекта</dd></div>
+    <div><dt>Команда</dt><dd>Продакт-менеджер и я</dd></div>
+    <div><dt>Срок</dt><dd>2 дня</dd></div>
+    <div><dt>Статус</dt><dd>В разработке, прототип — основа ТЗ</dd></div>
+  </dl>
+  <div class="scores">
+    <div class="score"><b><span>206</span></b><small>клиентов уже пользуются оперативным дашбордом</small></div>
+    <div class="score"><b>×<span>2,25</span></b><small>срок жизни клиента с дашбордом: 14,25 мес. против 6,33 без него</small></div>
+    <div class="score"><b><span>70%+</span></b><small>клиентов ведут управленческий учёт в Google-таблицах</small></div>
+  </div>
+</header>
+
+<div class="wide cover">
+  <figure class="fig" style="margin:0">
+    <div class="shot"><img src="img/dash-01.webp" width="1600" height="1000" alt="Раздел «Дашборд» в кабинете клиента с виджетами выручки, остатков и плана"></div>
+    <figcaption>Дашборд — раздел кабинета клиента. Каждый виджет читает строку Google-таблицы, а период и размер настраиваются прямо на нём.</figcaption>
+  </figure>
+</div>
+
+<main>
+<section class="wrap" id="context">
+  <div class="sec-label"><i>01</i>Контекст</div>
+  <h2>Дашборд удваивает жизнь клиента, но каждый собирают вручную</h2>
+  <p>Дашборд собирает финансовый директор (ФД), у которого десятки клиентов. Живёт он в кабинете клиента, рядом с инструментами, встречами и задачами: собственник и его команда смотрят его каждый день, часто с телефона, и могут сами добавить виджет. Чем дороже сборка, тем меньше клиентов получают дашборд — и тем меньше эффект на срок жизни.</p>
+  <p>Любое продуктовое решение сервиса сводится к трём North Star-метрикам:</p>
+  <div class="nsm">
+    <div class="on"><b>LT клиентов</b>Как долго клиент остаётся с сервисом. С дашбордом — в 2,25 раза дольше.</div>
+    <div><b>Норма управляемости</b>Сколько клиентов ведёт один ФД без потери качества. Дешёвая сборка дашборда снимает с ФД ручную работу.</div>
+    <div><b>LT финдиров</b>Как долго ФД остаются в сервисе. Зависит от загрузки, а значит от дохода.</div>
+  </div>
+  <div class="callout">
+    <p><b>Как было</b></p>
+    <ul class="list">
+      <li>Каждый ФД сам собирал графики к ежемесячной презентации отчётности. Показали на встрече — и к следующей всё собирай заново.</li>
+      <li>Собирали в Excel, единицы — с помощью нейросетей.</li>
+      <li>Всё разрознено и в разных стилях: как у кого получится.</li>
+    </ul>
+  </div>
+  <div class="callout" style="background:#F8F9FE">
+    <p><b>Ограничение: данные клиента не уходят в нейросеть.</b> ИИ участвует только в составлении формул — подсказывает, какие строки взять и как их посчитать. Виджет собирает и показывает фронтенд, цифры остаются у нас.</p>
+  </div>
+</section>
+
+<section class="wrap" id="goal">
+  <div class="sec-label"><i>02</i>Цель и гипотезы</div>
+  <h2>Добавить виджет так же просто, как выбрать показатель</h2>
+  <p>Я исходил из того, что конструктором будет пользоваться не только ФД, но и собственник бизнеса без опыта в таблицах. Значит, в нём нужно разобраться с первого раза. Отсюда три принципа — один шаг на одно решение, минимум контролов за раз, линейный сценарий без отдельных окон.</p>
+  <div class="hyp">
+    <div><b>H1. Если</b> спрашивать показатель, а не адрес ячейки, <b>то</b> виджет добавит человек, который не знает A1-нотацию, <b>потому что</b> он думает показателями, а не клетками.</div>
+    <div><b>H2. Если</b> нестандартный показатель можно описать словами, <b>то</b> ФД перестанет собирать формулы по адресам, <b>потому что</b> ИИ сам найдёт строки и покажет расчёт.</div>
+    <div><b>H3. Если</b> до первого виджета показать пример дашборда и короткое демо, <b>то</b> до первого виджета дойдёт больше людей, <b>потому что</b> они увидят результат раньше настройки.</div>
+  </div>
+</section>
+
+<section class="wrap" id="research">
+  <div class="sec-label"><i>03</i>Исследование</div>
+  <h2>Что показали встреча с командой, дашборды ФД и три аналога</h2>
+  <p>Исследование было кабинетным: встреча с командой 18 сентября, разбор дашбордов, которые ФД делают клиентам, и бенчмарк Databox, Geckoboard и Klipfolio. Интервью с ФД и клиентами не проводил — гипотезы проверим на юзабилити-тестах.</p>
+  <div class="insights">
+    <div><span>Инсайт 1</span><b>Таблица меняется, адрес — нет.</b> ФД вставляют строки и добавляют месяцы справа. Адрес ОПиУ!B10:G10 после этого указывает не туда. Geckoboard прямо пишет об этом в справке.</div>
+    <div><span>Инсайт 2</span><b>Аналоги дают выбрать кликом.</b> Все три сервиса показывают превью листа и берут строку целиком, чтобы новые месяцы подхватывались сами. Ручной адрес — запасной путь.</div>
+    <div><span>Инсайт 3</span><b>Кастомность очень высокая.</b> Набор показателей зависит от отрасли и оборота клиента. Общее — например, план-факт по бюджету движения денег и списки отклонений — закрывают шаблоны, для остального нужен свой виджет.</div>
+    <div><span>Инсайт 4</span><b>Некоторые показатели нужны каждый день.</b> Их важно отслеживать ежедневно, а не раз в месяц на презентации отчётности, поэтому дашборд должен быть всегда под рукой со свежими цифрами.</div>
+  </div>
+</section>
+
+<section class="wrap" id="options">
+  <div class="sec-label"><i>04</i>Варианты</div>
+  <h2>Пять способов связать виджет с таблицей</h2>
+  <p>Главный вопрос — как сервис поймёт, из какого места таблицы брать цифру, и кто отвечает, если она окажется неверной. Я разделил две вещи: как хранится связь и как ФД её находит. Хранится всегда одинаково — ссылка на конкретную строку таблицы. А найти строку можно несколькими путями.</p>
+  <div class="tbl">
+  <table class="opts">
+    <thead><tr><th>Способ</th><th>Что делает ФД</th><th>Что хорошо</th><th>Что плохо</th><th>Решение</th></tr></thead>
+    <tbody>
+      <tr><td>Сервис сам разбирает таблицу</td><td>Проверяет, что сервис нашёл всё верно</td><td>Ничего не нужно искать</td><td>У каждого ФД своя таблица — каждая новая ломает разбор. За ошибку в цифре отвечаем мы</td><td><span class="tag no">Отказались</span></td></tr>
+      <tr><td>Координаты клеток</td><td>Пишет адрес вроде «лист ОПиУ, клетки B10–G10»</td><td>Просто сделать, ошибки понятны</td><td>Вставили строку — адрес указывает уже не туда. Собственнику такое не объяснить</td><td><span class="tag mid">Запасной вариант</span></td></tr>
+      <tr><td>Имена у строк</td><td>Один раз даёт строке имя, например «выручка»</td><td>Строку находим, даже если таблицу перестроили</td><td>Таблицу нужно один раз подготовить</td><td><span class="tag mid">Показываем первыми в поиске</span></td></tr>
+      <tr><td>Отдельный лист для дашборда</td><td>Собирает лист по шаблону</td><td>Самый надёжный вариант; лишнее, например зарплаты, туда не попадает</td><td>Кажется, что просят переделать таблицу</td><td><span class="tag mid">Советуем в подсказке</span></td></tr>
+      <tr class="pick"><td>Поиск по названию и выбор в таблице</td><td>Пишет «выруч» или кликает по нужной строке</td><td>Спрашиваем, что показать, а не где это лежит</td><td>Сервису нужно прочитать названия строк</td><td><span class="tag yes">Выбрали</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>ИИ здесь только помогает определить, какие строки взять и по какой формуле посчитать. Доступа к цифрам и другим чувствительным данным у него нет, а итоговая связь всегда явная и проверяемая.</p>
+</section>
+
+<div class="wide figure" style="padding-bottom:24px">
+  <div class="scheme" data-w="1680" data-h="840" style="--w:1680;--h:840"><div class="scheme-inner"><div style="position:relative;width:1680px;height:840px;background:#fff;font-family:'Golos Text','PT Root UI',sans-serif;color:#1E293B"><svg width="80" height="8" viewBox="0 0 80 8" aria-hidden="true" style="left:424px;top:240px;width:80px;height:8px;stroke:#64748B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><path d="M 0 4 L 80 4"></path></svg>
+<svg width="80" height="8" viewBox="0 0 80 8" aria-hidden="true" style="left:424px;top:352px;width:80px;height:8px;stroke:#64748B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><path d="M 0 4 L 80 4"></path></svg>
+<svg width="80" height="8" viewBox="0 0 80 8" aria-hidden="true" style="left:424px;top:464px;width:80px;height:8px;stroke:#64748B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><path d="M 0 4 L 80 4"></path></svg>
+<svg width="80" height="8" viewBox="0 0 80 8" aria-hidden="true" style="left:424px;top:576px;width:80px;height:8px;stroke:#64748B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><path d="M 0 4 L 80 4"></path></svg>
+<svg width="8" height="336" viewBox="0 0 8 336" aria-hidden="true" style="left:500px;top:244px;width:8px;height:336px;stroke:#64748B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><path d="M 4 0 L 4 336"></path></svg>
+<svg width="79" height="8" viewBox="0 0 79 8" aria-hidden="true" style="left:504px;top:408px;width:79px;height:8px;stroke:#64748B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><defs><marker id="link-ah-1" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#64748B" stroke="none" style="stroke:none;fill:#64748B;stroke-dasharray:none"></path></marker></defs><path d="M 0 4 L 75 4" marker-end="url(#link-ah-1)"></path></svg>
+<svg width="80" height="8" viewBox="0 0 80 8" aria-hidden="true" style="left:944px;top:408px;width:80px;height:8px;stroke:#64748B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><path d="M 0 4 L 80 4"></path></svg>
+<svg width="8" height="350" viewBox="0 0 8 350" aria-hidden="true" style="left:1020px;top:290px;width:8px;height:350px;stroke:#64748B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><path d="M 4 0 L 4 350"></path></svg>
+<svg width="159" height="8" viewBox="0 0 159 8" aria-hidden="true" style="left:1024px;top:286px;width:159px;height:8px;stroke:#1D23CD;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><defs><marker id="link-ah-2" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#1D23CD" stroke="none" style="stroke:none;fill:#1D23CD;stroke-dasharray:none"></path></marker></defs><path d="M 0 4 L 155 4" marker-end="url(#link-ah-2)"></path></svg>
+<svg width="159" height="8" viewBox="0 0 159 8" aria-hidden="true" style="left:1024px;top:636px;width:159px;height:8px;stroke:#64748B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><defs><marker id="link-ah-3" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#64748B" stroke="none" style="stroke:none;fill:#64748B;stroke-dasharray:none"></path></marker></defs><path d="M 0 4 L 155 4" marker-end="url(#link-ah-3)"></path></svg>
+<div style="position:absolute;left:64px;top:56px;font-size:32px;line-height:43px;color:#0F172A;font-weight:600;">Как виджет связан с таблицей</div>
+<div style="position:absolute;left:64px;top:104px;width:1100px;font-size:16px;line-height:21px;color:#64748B;font-weight:400;">Найти строку можно четырьмя путями, но хранится всегда один явный адрес. Его можно проверить и поправить.</div>
+<div style="position:absolute;left:64px;top:168px;font-size:12px;line-height:16px;color:#64748B;font-weight:500;letter-spacing:.08em">КАК ФД НАХОДИТ СТРОКУ</div>
+<div style="position:absolute;left:64px;top:200px;width:360px;height:88px;box-sizing:border-box;background:#fff;border:1.5px solid #1D23CD;border-radius:12px;overflow:hidden;"><div style="padding:14px 16px;display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;font-weight:600;color:#1D23CD">Поиск по названию</span><span style="font-size:12px;line-height:16px;color:#64748B">пишет «выруч» — сначала именованные диапазоны, потом строки листов</span></div></div>
+<div style="position:absolute;left:64px;top:312px;width:360px;height:88px;box-sizing:border-box;background:#fff;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden;"><div style="padding:14px 16px;display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;font-weight:600;color:#0F172A">Выбор в таблице</span><span style="font-size:12px;line-height:16px;color:#64748B">кликает по строке в превью листа</span></div></div>
+<div style="position:absolute;left:64px;top:424px;width:360px;height:88px;box-sizing:border-box;background:#fff;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden;"><div style="padding:14px 16px;display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;font-weight:600;color:#0F172A">Свой виджет</span><span style="font-size:12px;line-height:16px;color:#64748B">описывает словами — ИИ предлагает строки и формулу</span></div></div>
+<div style="position:absolute;left:64px;top:536px;width:360px;height:88px;box-sizing:border-box;background:#fff;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden;"><div style="padding:14px 16px;display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;font-weight:600;color:#0F172A">Адрес вручную</span><span style="font-size:12px;line-height:16px;color:#64748B"><span style="font-family:'Roboto Mono',monospace">ОПиУ!B10:G10</span> — запасной путь</span></div></div>
+<div style="position:absolute;left:584px;top:300px;font-size:12px;line-height:16px;color:#1D23CD;font-weight:500;letter-spacing:.08em">ХРАНИТСЯ ОДНО</div>
+<div style="position:absolute;left:584px;top:332px;width:360px;height:160px;box-sizing:border-box;background:#fff;border:1.5px solid #1D23CD;border-radius:12px;overflow:hidden;"><div style="padding:16px 18px;display:flex;flex-direction:column;gap:8px"><span style="font-size:15px;font-weight:600;color:#0F172A">Адрес виджета</span><span style="font-family:'Roboto Mono',monospace;font-size:13px;color:#1D23CD">ОПиУ · строка 10</span><span style="font-size:12px;color:#1E293B">Подписи периодов — строка 3</span><span style="font-size:12px;color:#1E293B">Единицы — из формата ячейки</span></div></div>
+<div style="position:absolute;left:584px;top:508px;width:360px;font-size:13px;line-height:17px;color:#64748B;font-weight:400;">ИИ — помощник, а не источник истины: итоговый адрес всегда явный и проверяемый.</div>
+<div style="position:absolute;left:1036px;top:262px;width:140px;font-size:13px;line-height:17px;color:#1D23CD;font-weight:400;">строка на месте</div>
+<div style="position:absolute;left:1036px;top:652px;width:140px;font-size:13px;line-height:17px;color:#64748B;font-weight:400;">в отчёт вставили строку</div>
+<div style="position:absolute;left:1184px;top:168px;font-size:12px;line-height:16px;color:#1D23CD;font-weight:500;letter-spacing:.08em">ДАННЫЕ ЧИТАЮТСЯ</div>
+<div style="position:absolute;left:1184px;top:200px;width:432px;height:180px;box-sizing:border-box;background:#fff;border:1.5px solid #1D23CD;border-radius:12px;overflow:hidden;"><div style="padding:16px 18px;display:flex;flex-direction:column;gap:6px"><span style="font-size:12px;color:#64748B">Выручка</span><span style="font-family:'Roboto Mono',monospace;font-size:24px;font-weight:500;color:#0F172A">5 120 тыс ₽</span><span style="font-family:'Roboto Mono',monospace;font-size:12px;color:#047857">▲ 8,2% к августу</span><svg width="390" height="34" aria-hidden="true"><polyline points="2,30 80,24 160,26 240,14 320,10 388,4" fill="none" stroke="#797DE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="font-size:11px;color:#64748B">прочитано 4 минуты назад · данные на 30.09</span></div></div>
+<div style="position:absolute;left:1184px;top:438px;font-size:12px;line-height:16px;color:#64748B;font-weight:500;letter-spacing:.08em">АДРЕС СЪЕХАЛ</div>
+<div style="position:absolute;left:1184px;top:470px;width:432px;height:300px;box-sizing:border-box;background:#fff;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden;"><div style="display:flex;flex-direction:column;height:100%"><div style="padding:14px 18px;display:flex;flex-direction:column;gap:6px;border-bottom:1px solid #E2E8F0"><span style="font-size:11px;letter-spacing:.06em;color:#64748B;font-weight:500">КЛИЕНТ ВИДИТ</span><div style="display:flex;align-items:center;gap:10px"><span style="font-family:'Roboto Mono',monospace;font-size:20px;font-weight:500;color:#0F172A">4 730 тыс ₽</span><span style="font-size:11px;background:#FEF3C7;color:#B45309;border-radius:999px;padding:3px 8px">данные от 19 сентября</span></div><span style="font-size:12px;color:#64748B">Последнее удачное значение вместо пустого виджета</span></div><div style="padding:14px 18px;display:flex;flex-direction:column;gap:8px;background:#F8FAFC;flex:1"><span style="font-size:11px;letter-spacing:.06em;color:#64748B;font-weight:500">ФД ВИДИТ</span><div style="background:#FEF3C7;border-radius:8px;padding:10px 12px;font-size:12px;line-height:16px;color:#1E293B">В строке 10 теперь «Себестоимость». «Выручка» переехала в строку 21.</div><div style="display:flex;gap:8px"><span style="height:30px;padding:0 12px;border-radius:8px;background:#1D23CD;color:#fff;font-size:12px;line-height:30px">Взять строку 21</span><span style="height:30px;padding:0 12px;border-radius:8px;background:#E7E8F9;color:#1D23CD;font-size:12px;line-height:30px">Поправить адрес</span></div></div></div></div></div></div></div>
+  <figcaption>Четыре пути к строке сходятся в одном явном адресе. Если таблица изменилась, клиент не видит пустоту, а ФД получает готовое исправление.</figcaption>
+</div>
+
+<section class="wrap" id="solution">
+  <div class="sec-label"><i>05</i>Решение</div>
+  <h2>Виджет за четыре шага: один вопрос на шаг</h2>
+  <p>Каждый шаг отвечает на один вопрос: что показать, откуда взять, как нарисовать. Нестандартный показатель добавляется по тому же сценарию, только последний шаг — диалог.</p>
+</section>
+
+<div class="wide figure" style="padding-bottom:8px">
+  <div class="scheme" data-w="1144" data-h="800" style="--w:1144;--h:800"><div class="scheme-inner"><div style="position:relative;width:1144px;height:800px;background:#fff;font-family:'Golos Text','PT Root UI',sans-serif;color:#1E293B"><svg width="55" height="8" viewBox="0 0 55 8" aria-hidden="true" style="left:274px;top:346px;width:55px;height:8px;stroke:#64748B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><defs><marker id="flow-ah-1" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#64748B" stroke="none" style="stroke:none;fill:#64748B;stroke-dasharray:none"></path></marker></defs><path d="M 0 4 L 51 4" marker-end="url(#flow-ah-1)"></path></svg>
+<svg width="55" height="8" viewBox="0 0 55 8" aria-hidden="true" style="left:540px;top:346px;width:55px;height:8px;stroke:#64748B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><defs><marker id="flow-ah-2" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#64748B" stroke="none" style="stroke:none;fill:#64748B;stroke-dasharray:none"></path></marker></defs><path d="M 0 4 L 51 4" marker-end="url(#flow-ah-2)"></path></svg>
+<svg width="55" height="8" viewBox="0 0 55 8" aria-hidden="true" style="left:806px;top:346px;width:55px;height:8px;stroke:#64748B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><defs><marker id="flow-ah-3" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#64748B" stroke="none" style="stroke:none;fill:#64748B;stroke-dasharray:none"></path></marker></defs><path d="M 0 4 L 51 4" marker-end="url(#flow-ah-3)"></path></svg>
+<svg width="8" height="170" viewBox="0 0 8 170" aria-hidden="true" style="left:165px;top:500px;width:8px;height:170px;stroke:#64748B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><path d="M 4 0 L 4 170"></path></svg>
+<svg width="160" height="8" viewBox="0 0 160 8" aria-hidden="true" style="left:169px;top:666px;width:160px;height:8px;stroke:#1D23CD;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><defs><marker id="flow-ah-4" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#1D23CD" stroke="none" style="stroke:none;fill:#1D23CD;stroke-dasharray:none"></path></marker></defs><path d="M 0 4 L 156 4" marker-end="url(#flow-ah-4)"></path></svg>
+<svg width="161" height="8" viewBox="0 0 161 8" aria-hidden="true" style="left:806px;top:666px;width:161px;height:8px;stroke:#1D23CD;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><path d="M 0 4 L 161 4"></path></svg>
+<svg width="8" height="169" viewBox="0 0 8 169" aria-hidden="true" style="left:963px;top:501px;width:8px;height:169px;stroke:#1D23CD;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;position:absolute"><defs><marker id="flow-ah-5" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#1D23CD" stroke="none" style="stroke:none;fill:#1D23CD;stroke-dasharray:none"></path></marker></defs><path d="M 4 169 L 4 4" marker-end="url(#flow-ah-5)"></path></svg>
+<div style="position:absolute;left:64px;top:56px;font-size:32px;line-height:43px;color:#0F172A;font-weight:600;">Как добавляется виджет</div>
+<div style="position:absolute;left:64px;top:104px;width:1000px;font-size:16px;line-height:21px;color:#64748B;font-weight:400;">На каждом шаге — одно решение, результат виден сразу.</div>
+<div style="position:absolute;left:64px;top:178px;font-size:11px;line-height:14px;color:#64748B;font-weight:500;letter-spacing:.06em">1 · ПОКАЗАТЕЛЬ</div>
+<div style="position:absolute;left:330px;top:178px;font-size:11px;line-height:14px;color:#64748B;font-weight:500;letter-spacing:.06em">2 · ДАННЫЕ</div>
+<div style="position:absolute;left:596px;top:178px;font-size:11px;line-height:14px;color:#64748B;font-weight:500;letter-spacing:.06em">3 · ВИД</div>
+<div style="position:absolute;left:862px;top:178px;font-size:11px;line-height:14px;color:#64748B;font-weight:500;letter-spacing:.06em">4 · ДАШБОРД</div>
+<div style="position:absolute;left:64px;top:200px;width:210px;height:300px;box-sizing:border-box;background:#fff;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden;"><div style="padding:14px;display:flex;flex-direction:column;gap:10px"><span style="font-size:13px;font-weight:600;color:#0F172A">Что показать?</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="height:58px;box-sizing:border-box;border-radius:8px;border:1px dashed #CBD5E1;color:#1D23CD;font-size:11px;line-height:13px;padding:8px">+ Свой вариант</div><div style="height:58px;box-sizing:border-box;border-radius:8px;border:1.5px solid #1D23CD;background:#F8F9FE;color:#1D23CD;font-weight:500;font-size:11px;line-height:13px;padding:8px">Выручка</div><div style="height:58px;box-sizing:border-box;border-radius:8px;border:1px solid #CBD5E1;color:#1E293B;font-size:11px;line-height:13px;padding:8px">Чистая прибыль</div><div style="height:58px;box-sizing:border-box;border-radius:8px;border:1px solid #CBD5E1;color:#1E293B;font-size:11px;line-height:13px;padding:8px">Остатки денег</div><div style="height:58px;box-sizing:border-box;border-radius:8px;border:1px solid #CBD5E1;color:#1E293B;font-size:11px;line-height:13px;padding:8px">План-факт выбытий</div><div style="height:58px;box-sizing:border-box;border-radius:8px;border:1px solid #CBD5E1;color:#1E293B;font-size:11px;line-height:13px;padding:8px">Точка безубыточности</div></div></div></div>
+<div style="position:absolute;left:330px;top:200px;width:210px;height:300px;box-sizing:border-box;background:#fff;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden;"><div style="padding:14px;display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:600;color:#0F172A">Откуда взять?</span><div style="height:30px;box-sizing:border-box;border:1.5px solid #797DE2;border-radius:8px;padding:0 10px;display:flex;align-items:center;font-size:12px;color:#1E293B">выруч|</div><div style="border:1px solid #CBD5E1;border-radius:8px;box-shadow:0 8px 16px rgba(0,0,0,.08);padding:6px;display:flex;flex-direction:column;gap:2px"><span style="font-size:10px;color:#64748B;padding:2px 4px">Именованные</span><span style="font-size:11px;padding:4px;border-radius:6px;background:#E7E8F9;color:#1D23CD">Выручка_мес</span><span style="font-size:10px;color:#64748B;padding:2px 4px">Строки</span><span style="font-size:11px;padding:4px">ОПиУ · Выручка</span><span style="font-size:11px;padding:4px">ДДС · Поступления выручки</span></div><div style="background:#F8FAFC;border-radius:8px;padding:6px 8px;display:flex;flex-direction:column;gap:3px"><div style="display:flex;justify-content:space-between;font-size:10px;color:#64748B"><span>июл</span><span style="font-family:'Roboto Mono',monospace;color:#1E293B">4 610</span></div><div style="display:flex;justify-content:space-between;font-size:10px;color:#64748B"><span>авг</span><span style="font-family:'Roboto Mono',monospace;color:#1E293B">4 730</span></div><div style="display:flex;justify-content:space-between;font-size:10px;color:#64748B"><span>сен</span><span style="font-family:'Roboto Mono',monospace;color:#1E293B">5 120</span></div></div></div></div>
+<div style="position:absolute;left:596px;top:200px;width:210px;height:300px;box-sizing:border-box;background:#fff;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden;"><div style="padding:14px;display:flex;flex-direction:column;gap:10px"><span style="font-size:13px;font-weight:600;color:#0F172A">Как показать?</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="height:76px;box-sizing:border-box;border:1px solid #CBD5E1;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center"><svg width="60" height="30" aria-hidden="true"><rect x="0" y="4" width="44" height="10" rx="3" fill="#E2E8F0"/><rect x="0" y="20" width="26" height="6" rx="3" fill="#E2E8F0"/></svg></div><div style="height:76px;box-sizing:border-box;border:1.5px solid #1D23CD;background:#F8F9FE;border-radius:8px;display:flex;align-items:center;justify-content:center"><svg width="64" height="34" aria-hidden="true"><polyline points="2,28 16,20 30,23 44,10 62,6" fill="none" stroke="#797DE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="height:76px;box-sizing:border-box;border:1px solid #CBD5E1;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center"><svg width="60" height="34" aria-hidden="true"><rect x="2" y="16" width="10" height="18" rx="2" fill="#E2E8F0"/><rect x="17" y="8" width="10" height="26" rx="2" fill="#E2E8F0"/><rect x="32" y="20" width="10" height="14" rx="2" fill="#E2E8F0"/><rect x="47" y="4" width="10" height="30" rx="2" fill="#E2E8F0"/></svg></div><div style="height:76px;box-sizing:border-box;border:1px solid #CBD5E1;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center"><svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="13" fill="none" stroke="#E2E8F0" stroke-width="7"/><circle cx="18" cy="18" r="13" fill="none" stroke="#CBD5E1" stroke-width="7" stroke-dasharray="30 82"/></svg></div></div><span style="font-size:11px;color:#64748B;line-height:14px">Только виды, подходящие к данным. Превью — на прочитанных цифрах.</span></div></div>
+<div style="position:absolute;left:862px;top:200px;width:210px;height:300px;box-sizing:border-box;background:#fff;border:1.5px solid #1D23CD;border-radius:12px;overflow:hidden;"><div style="padding:14px;display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:600;color:#0F172A">Дашборд</span><div style="border:1.5px solid #1D23CD;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:4px"><span style="font-size:10px;color:#64748B">Выручка · новый</span><span style="font-family:'Roboto Mono',monospace;font-size:15px;font-weight:500;color:#0F172A">5 120 тыс ₽</span><svg width="170" height="26" aria-hidden="true"><polyline points="2,22 40,17 80,19 120,9 168,4" fill="none" stroke="#797DE2" stroke-width="2.5" stroke-linecap="round"/></svg></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="border:1px solid #CBD5E1;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:4px"><span style="font-size:10px;color:#64748B">Прибыль</span><span style="font-family:'Roboto Mono',monospace;font-size:13px;font-weight:500;color:#0F172A">612</span><div style="width:50px;height:6px;border-radius:4px;background:#E2E8F0;flex:none"></div></div><div style="border:1px solid #CBD5E1;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:4px"><span style="font-size:10px;color:#64748B">Остатки</span><span style="font-family:'Roboto Mono',monospace;font-size:13px;font-weight:500;color:#0F172A">2 940</span><svg width="70" height="18" aria-hidden="true"><polyline points="1,15 18,11 35,12 52,5 69,3" fill="none" stroke="#797DE2" stroke-width="2" stroke-linecap="round"/></svg></div></div></div></div>
+<div style="position:absolute;left:181px;top:572px;width:110px;font-size:13px;line-height:17px;color:#1D23CD;font-weight:400;">свой вариант</div>
+<div style="position:absolute;left:330px;top:512px;width:210px;font-size:11px;line-height:14px;color:#64748B;font-weight:400;">Для первого виджета перед этим шагом — подключение Google-таблицы</div>
+<div style="position:absolute;left:330px;top:576px;font-size:12px;line-height:16px;color:#1D23CD;font-weight:500;letter-spacing:.08em">ДИАЛОГ С ИИ — ПОСЛЕДНИЙ ШАГ</div>
+<div style="position:absolute;left:330px;top:600px;width:476px;height:140px;box-sizing:border-box;background:#fff;border:1.5px solid #1D23CD;border-radius:12px;overflow:hidden;"><div style="padding:12px 14px;display:flex;gap:14px;height:100%;box-sizing:border-box"><div style="flex:1;display:flex;flex-direction:column;gap:6px;min-width:0"><span style="align-self:flex-end;font-size:11px;background:#E7E8F9;border-radius:10px;padding:6px 10px;color:#1E293B">Доля ФОТ в выручке</span><span style="font-size:11px;line-height:15px;background:#F1F5F9;border-radius:10px;padding:6px 10px;color:#1E293B">Нашёл строки «ФОТ» и «Выручка» в ОПиУ. Формула: <span style="font-family:'Roboto Mono',monospace">ФОТ / Выручка × 100</span></span><div style="display:flex;gap:6px"><span style="font-size:10px;border:1px solid #CBD5E1;border-radius:6px;padding:2px 6px">линия</span><span style="font-size:10px;border:1px solid #CBD5E1;border-radius:6px;padding:2px 6px">порог 35%</span></div></div><div style="width:150px;flex:none;border-left:1px solid #E2E8F0;padding-left:14px;display:flex;flex-direction:column;gap:4px;justify-content:center"><span style="font-size:10px;color:#64748B">Доля ФОТ</span><span style="font-family:'Roboto Mono',monospace;font-size:15px;font-weight:500;color:#0F172A">19,9%</span><svg width="130" height="22" aria-hidden="true"><polyline points="2,8 30,12 60,10 95,15 128,14" fill="none" stroke="#797DE2" stroke-width="2" stroke-linecap="round"/></svg></div></div></div></div></div></div>
+  <figcaption>Показатель → данные → вид → дашборд. Нестандартный показатель идёт веткой «свой вариант» через диалог с ИИ.</figcaption>
+</div>
+
+<section class="wrap" style="border-top:0;padding-top:8px">
+  <div class="sub"><i>5.1</i><h3>Спрашивать показатель, а не адрес</h3></div>
+  <p>Первый шаг — плитки стандартных показателей: выручка, чистая прибыль, остатки денег, план-факт. Человек выбирает, что хочет видеть, а не где это лежит. Первой стоит плитка «Настроить свой вариант».</p>
+  <figure class="fig"><div class="shot"><img src="img/dash-02.webp" width="1600" height="1000" alt="Шаг «Показатель» с плитками шаблонов" loading="lazy"></div><figcaption>Шаг 1. Первая плитка — «Настроить свой вариант», на карточках шаблонов — из каких листов берутся данные.</figcaption></figure>
+
+  <div class="sub"><i>5.2</i><h3>Одно поле поиска вместо пяти селектов</h3></div>
+  <p>На шаге «Данные» одно поле. Пишешь «выруч» — сначала именованные диапазоны, потом строки со всех листов. Подписи периодов и единицы находим сами. Кто не помнит название, переключается на «Выбрать в таблице» и кликает по строке. Подключение Google-таблицы — отдельный шаг, но только для первого виджета: дальше этот шаг пропускается.</p>
+  <figure class="fig"><div class="shot"><img src="img/dash-03.webp" width="1600" height="1000" alt="Поиск строки с подсказками" loading="lazy"></div><figcaption>«выруч» — и первым идёт именованный диапазон. Справа короткая подсказка, как сделать связь устойчивой.</figcaption></figure>
+  <figure class="fig"><div class="shot"><img src="img/dash-04.webp" width="1600" height="1000" alt="Выбор строки в превью листа" loading="lazy"></div><figcaption>Второй путь — клик по строке в превью листа. Строки с именами помечены, листы переключаются вкладками.</figcaption></figure>
+
+  <div class="sub"><i>5.3</i><h3>Прочитанные цифры видны сразу</h3></div>
+  <p>Как только строка выбрана, справа видны цифры по месяцам — сразу понятно, те ли это данные, без отдельной проверки. Пока строка не выбрана, на этом месте подсказка, как сделать связь с таблицей устойчивой.</p>
+  <figure class="fig"><div class="shot"><img src="img/dash-05.webp" width="1600" height="1000" alt="Выбранная строка и прочитанные значения" loading="lazy"></div><figcaption>Слева выбранная строка, справа — что из неё прочитали. Сразу видно, те ли это цифры.</figcaption></figure>
+
+  <div class="sub"><i>5.4</i><h3>Свой виджет — диалогом в том же сценарии</h3></div>
+  <p>Нестандартный показатель собирается по тому же сценарию, только последний шаг — диалог с ИИ: слева чат, справа результат. Вид, порог и название меняются словами или чипсами. ИИ видит только названия строк и составляет формулу, а считает и рисует виджет фронтенд — цифры клиента в нейросеть не уходят.</p>
+  <div class="paid"><b>Для тех, кто знает формулу.</b> Описывать словами медленнее, чем написать формулу, поэтому её можно вписать прямо в чат.</div>
+  <figure class="fig"><div class="shot"><img src="img/dash-06.webp" width="1600" height="1000" alt="Диалог с ИИ: доля ФОТ в выручке" loading="lazy"></div><figcaption>«Доля ФОТ в выручке»: ИИ нашёл две строки, показал формулу и прочитанные значения, справа — как виджет будет выглядеть на дашборде. Дальше — чипсы «Сменить вид», «Порог или цель», «Период».</figcaption></figure>
+
+  <div class="sub"><i>5.5</i><h3>Настройки и период — на самом виджете</h3></div>
+  <p>Всё, что меняют после создания, живёт на карточке виджета: период (по месяцам, кварталам, годам или свой), обновление данных, размер и удаление. Это привычный набор для виджетов в аналитических сервисах — учить новый паттерн не нужно, а добавление виджета остаётся коротким. Сравнение всегда с прошлым периодом того же шага.</p>
+  <figure class="fig"><div class="shot"><img src="img/dash-07.webp" width="1600" height="1000" alt="Выбор периода на виджете" loading="lazy"></div><figcaption>Период меняется на самом виджете: по месяцам, кварталам, годам или свой.</figcaption></figure>
+  <figure class="fig"><div class="shot"><img src="img/dash-08.webp" width="1600" height="1000" alt="Меню виджета с размерами" loading="lazy"></div><figcaption>Меню виджета: четыре размера и удаление. Редкие действия не занимают место на карточке.</figcaption>
+
+  <div class="sub"><i>5.6</i><h3>Вкладки под каждую роль</h3></div>
+  <p>У клиента бывает большая команда с разными ролями, и каждому важно своё. Поэтому дашборд делится на вкладки: ФД собирает свою со своими показателями, финменеджер клиента — свою, собственник — третью. Каждый смотрит только то, что важно ему, и не листает чужие виджеты.</p></figure>
+</section>
+
+<section class="proto" aria-label="Живой прототип конструктора дашборда">
+  <div class="proto-bar">
+    <strong>Живой прототип конструктора</strong>
+    <span>Кабинет клиента открыт на разделе «Дашборд». «Добавить виджет» запускает пошаговый сценарий, клик по имени в шапке включает демо-данные, нижняя панель переключает экраны.</span>
+    <a href="nf-dashboard/" target="_blank" rel="noopener">Открыть в новой вкладке ↗</a>
+  </div>
+  <iframe src="nf-dashboard/" title="Прототип конструктора дашборда" loading="lazy" title="Прототип конструктора дашборда Нескучных финансов"></iframe>
+</section>
+
+<section class="wrap" id="states">
+  <div class="sec-label"><i>06</i>Состояния и онбординг</div>
+  <h2>Клиент не должен увидеть пустой виджет</h2>
+  <p>Таблица принадлежит клиенту: он может закрыть доступ или перестроить файл. Поэтому каждая ошибка говорит, что случилось и как починить. Если адрес съехал, виджет показывает последнее удачное значение с бейджем «данные от 19 сентября», а в настройках предлагает «Взять строку 21».</p>
+  <figure class="fig"><div class="shot"><img src="img/dash-09.webp" width="1600" height="1000" alt="Ошибка: вставлена не та ссылка" loading="lazy"></div><figcaption>Не та ссылка: что не так и где взять правильную. Справа — как дать сервису доступ к таблице.</figcaption></figure>
+  <p>Онбординг вынес в отдельную версию прототипа, чтобы на тестах сравнить две группы: с примером дашборда и демо сценария и без них. <a href="https://claude.ai/artifact/Bqb9tP31CXJD7qaPg8n6Qn" target="_blank" rel="noopener">Версия с онбордингом ↗</a></p>
+</section>
+
+
+<section class="wrap" id="claude">
+  <div class="sec-label"><i>07</i>Работа в Claude</div>
+  <h2>Прототип с настоящей логикой вместо макетов</h2>
+  <p>Вместо статичных макетов я собирал в Claude кликабельный HTML-прототип в Noboring DS. В нём работает то, что в Figma пришлось бы рисовать десятками состояний: поиск по демо-таблице за 12 месяцев, пересчёт по кварталам, формулы своих виджетов, диалог с ИИ. Такой прототип можно давать респондентам, а разработчики берут его как основу ТЗ.</p>
+  <div class="loop"><span>Правка</span><span>Автотест на 1400 и 390 px</span><span>Скриншоты</span><span>Публикация</span><span class="on">Моё ревью</span></div>
+  <p>Так прошла каждая итерация — больше 15 версий за 2 дня.</p>
+</section>
+
+<section class="wrap" id="result">
+  <div class="sec-label"><i>08</i>Результат</div>
+  <h2>Прототип в разработке, метрики будем собирать</h2>
+  <p>Цифр «до / после» пока нет: сначала юзабилити-тесты двух версий, потом замер после запуска.</p>
+  <div class="tbl">
+  <table class="tests">
+    <thead><tr><th>Метрика</th><th>Где смотрим</th><th>Гипотеза</th></tr></thead>
+    <tbody>
+      <tr><td>Доля добавивших виджет без помощи</td><td>Тесты, задание «добавьте выручку»</td><td class="n">H1</td></tr>
+      <tr><td>Время до первого виджета</td><td>Тесты и продуктовая аналитика</td><td class="n">H1, H3</td></tr>
+      <tr><td>Доля своих виджетов, собранных в диалоге</td><td>Продуктовая аналитика</td><td class="n">H2</td></tr>
+      <tr><td>Разница с онбордингом и без</td><td>Тесты на двух группах</td><td class="n">H3</td></tr>
+      <tr><td>Доля клиентов с дашбордом и их срок жизни</td><td>После запуска</td><td class="n"><b>North Star</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout"><p><b>Открытые вопросы.</b> Где граница между «читаем названия строк» и «разбираем таблицу». Как переносить настройку дашборда между клиентами — у ФД их десятки. Мобильная версия — отдельной задачей.</p></div>
+</section>
+
+<section class="wrap" id="me">
+  <div class="sec-label"><i>09</i>Мой вклад</div>
+  <h2>Что сделал я</h2>
+  <ol class="contrib">
+    <li>Разобрал дашборды ФД и три сервиса-аналога, сформулировал гипотезы.</li>
+    <li>Сравнил пять способов связать виджет с таблицей и предложил отказаться от разбора таблицы.</li>
+    <li>Заложил ограничение: ИИ составляет только формулы и не получает данные клиента.</li>
+    <li>Спроектировал пошаговый сценарий добавления виджета, поиск строки и выбор в таблице.</li>
+    <li>Придумал сценарий своего виджета через диалог с ИИ внутри общего сценария.</li>
+    <li>Продумал граничные состояния: нет доступа, съехавший адрес, пустой поиск.</li>
+    <li>Собрал в Claude две версии прототипа и автотест всего сценария.</li>
+  </ol>
+</section>
+</main>
+
+<footer class="wrap"><a class="toplink" href="index.html">← Все работы</a><br>Сергей Степанов · продуктовый дизайнер</footer>
+
+<script>
+(function(){
+  function fit(){
+    document.querySelectorAll('.scheme').forEach(function(el){
+      var w = +el.dataset.w, h = +el.dataset.h, inner = el.firstElementChild;
+      var s = Math.min(1, el.clientWidth / w);
+      inner.style.transform = 'scale(' + s + ')';
+      el.style.height = Math.ceil(h * s) + 'px';
+    });
+  }
+  fit();
+  window.addEventListener('resize', fit);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>
