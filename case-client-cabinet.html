@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Кабинет клиента: один интерфейс для финдиректора и компании — Сергей Степанов</title><meta name="description" content="Перенёс работу с клиентом из Google Sheets в общий кабинет: 15 интервью, общий вход и роли, быстрое создание задач на созвоне, два раунда тестов. Навигация 4,0 → 4,8 из 5."><link rel="canonical" href="https://zgarok.github.io/case-client-cabinet.html"><meta property="og:type" content="website"><meta property="og:locale" content="ru_RU"><meta property="og:site_name" content="Сергей Степанов — продуктовый дизайнер"><meta property="og:title" content="Кабинет клиента: один интерфейс для финдиректора и компании — Сергей Степанов"><meta property="og:description" content="Перенёс работу с клиентом из Google Sheets в общий кабинет: 15 интервью, общий вход и роли, быстрое создание задач на созвоне, два раунда тестов. Навигация 4,0 → 4,8 из 5."><meta property="og:url" content="https://zgarok.github.io/case-client-cabinet.html"><meta property="og:image" content="https://zgarok.github.io/img/og-cabinet.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+/* Кейс: узкая колонка текста, схемы и прототип — на всю ширину */
+:root{
+  --bg:#FFFFFF; --surface:#F8FAFC; --surface-2:#F1F5F9;
+  --ink:#0F172A; --text:#1E293B; --muted:#64748B; --line:#E2E8F0;
+  --accent:#1D23CD; --accent-soft:#E7E8F9; --accent-line:#797DE2;
+  --pos:#047857; --pos-bg:#ECFDF5; --night:#060728;
+  --sans:'Golos Text','PT Root UI',system-ui,sans-serif;
+  --mono:'Roboto Mono',ui-monospace,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.6 var(--sans)}
+a{color:var(--accent);text-underline-offset:3px}
+a:hover{color:#4B50D8}
+.wrap{max-width:760px;margin:0 auto;padding-inline:max(20px,env(safe-area-inset-left,0px)) max(20px,env(safe-area-inset-right,0px))}
+.wide{max-width:1240px;margin:0 auto;padding-inline:max(20px,env(safe-area-inset-left,0px)) max(20px,env(safe-area-inset-right,0px))}
+
+/* hero */
+.hero{padding-block:72px 40px}
+.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+h1{margin:16px 0 0;font-size:clamp(34px,5.4vw,56px);line-height:1.08;font-weight:600;color:var(--ink);letter-spacing:-.02em;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+.lead{margin:24px 0 0;font-size:clamp(18px,2.2vw,21px);line-height:1.5;color:var(--text);max-width:680px}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;margin-top:40px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.facts div{background:var(--bg);padding:16px 18px}
+.facts dt{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:6px 0 0;font-size:15px;line-height:1.4;color:var(--ink)}
+.scores{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
+.score{border:1px solid var(--line);border-radius:12px;padding:18px}
+.score b{display:block;font:500 28px/1.1 var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.score b span{color:var(--accent)}
+.score small{display:block;margin-top:8px;font-size:14px;line-height:1.4;color:var(--muted)}
+
+/* sections */
+section{padding-block:56px}
+section + section{border-top:1px solid var(--line)}
+.sec-label{display:flex;align-items:baseline;gap:12px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.sec-label i{font-style:normal;font-family:var(--mono);color:var(--accent)}
+h2{margin:12px 0 0;font-size:clamp(26px,3.4vw,34px);line-height:1.2;font-weight:600;color:var(--ink);letter-spacing:-.01em;text-wrap:balance}
+h3{margin:36px 0 0;font-size:20px;line-height:1.3;font-weight:600;color:var(--ink)}
+p{margin:16px 0 0}
+ul.list{margin:16px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+ul.list li{position:relative;padding-left:22px}
+ul.list li::before{content:"";position:absolute;left:2px;top:.72em;width:8px;height:2px;background:var(--accent)}
+.todo{background:#FFFBEB;border:1px dashed #F59E0B;border-radius:6px;padding:1px 6px;color:#B45309;font-size:.92em}
+
+.callout{margin-top:24px;border-left:0;background:var(--surface);border-radius:12px;padding:20px 22px}
+.callout p:first-child{margin-top:0}
+.quote{font-size:19px;line-height:1.5;color:var(--ink)}
+
+.hyp{display:grid;gap:12px;margin-top:20px}
+.hyp div{border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.hyp b{color:var(--accent);font-weight:600}
+
+.insights{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}
+.insights div{border:1px solid var(--line);border-radius:12px;padding:18px 20px;font-size:16px;line-height:1.5}
+.insights span{display:block;font:500 12px/1 var(--mono);color:var(--muted);margin-bottom:10px}
+
+.changes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+.changes>div{border:1px solid var(--line);border-radius:12px;padding:18px 20px;min-width:0}
+.changes b{color:var(--ink)}
+.changes .list{font-size:15px;line-height:1.5}
+.nsm{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:12px;margin-top:16px}
+.nsm>div{border:1px solid var(--line);border-radius:12px;padding:16px 18px;font-size:14px;line-height:1.5;color:var(--muted);min-width:0}
+.nsm b{display:block;margin-bottom:6px;font-size:16px;color:var(--ink)}
+.nsm .on{border-color:var(--accent-line);background:#F8F9FE}
+.nsm .on b{color:var(--accent)}
+.decisions{display:grid;gap:0;margin-top:20px;border-top:1px solid var(--line)}
+.decisions div{display:grid;grid-template-columns:200px minmax(0,1fr);gap:24px;padding:18px 0;border-bottom:1px solid var(--line)}
+.decisions dt{font-weight:600;color:var(--ink);line-height:1.4}
+.decisions dd{margin:0;min-width:0}
+
+/* schemes */
+.figure{padding-block:8px 8px}
+.figure figcaption{margin-top:12px;font-size:14px;color:var(--muted)}
+.scheme{position:relative;width:100%;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#fff;height:calc(var(--h) * 1px)}
+.scheme-inner{position:absolute;left:0;top:0;transform-origin:0 0}
+.scheme.noscale{overflow-x:auto;height:auto}
+.scheme.noscale .scheme-inner{position:static}
+
+/* prototype */
+.proto{margin-top:8px;padding:0;background:var(--night);color:#fff}
+.proto-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding:18px max(20px,env(safe-area-inset-left,0px)) 18px max(20px,env(safe-area-inset-right,0px))}
+.proto-bar strong{font-size:17px;font-weight:600}
+.proto-bar span{font-size:14px;color:#A3A5EB}
+.proto-bar a{margin-left:auto;color:#fff;font-size:14px;border:1px solid #4B50D8;border-radius:8px;padding:8px 14px;text-decoration:none}
+.proto-bar a:hover{background:#181CA5;color:#fff}
+.proto iframe{display:block;width:100%;height:min(88vh,920px);min-height:560px;border:0;background:#fff}
+
+/* results */
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}
+.metrics div{border:1px dashed var(--accent-line);border-radius:12px;padding:16px 18px;font-size:15px;line-height:1.45}
+.metrics b{display:block;font:500 12px/1 var(--mono);letter-spacing:.04em;color:var(--accent);margin-bottom:8px;text-transform:uppercase}
+
+table.tests{width:100%;margin-top:20px;border-collapse:collapse;font-size:15px}
+table.tests th{text-align:left;font-weight:500;color:var(--muted);font-size:13px;padding:10px 12px;border-bottom:1px solid var(--line)}
+table.tests td{padding:14px 12px;border-bottom:1px solid var(--line)}
+table.tests td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+table.tests td.n b{color:var(--pos);font-weight:500}
+.tbl{overflow-x:auto}
+
+.contrib{margin-top:20px;display:grid;gap:10px;counter-reset:c}
+.contrib li{list-style:none;display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;align-items:baseline}
+.contrib li::before{counter-increment:c;content:counter(c,decimal-leading-zero);font:500 14px/1 var(--mono);color:var(--accent)}
+.contrib{padding:0}
+
+footer{padding-block:48px 72px;color:var(--muted);font-size:14px}
+
+@media (max-width:720px){
+  body{font-size:16px}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .scores,.insights,.metrics,.changes,.nsm{grid-template-columns:minmax(0,1fr)}
+  .decisions div{grid-template-columns:minmax(0,1fr);gap:6px}
+  .proto-bar a{margin-left:0}
+  .proto iframe{height:80vh;min-height:520px}
+}
+@media (prefers-reduced-motion:no-preference){ a{transition:color .15s} }
+.topnav{display:flex;justify-content:space-between;gap:24px;padding-top:24px;padding-bottom:24px;border-bottom:1px solid var(--line);font-size:16px}.foot-links{display:flex;flex-wrap:wrap;gap:24px;margin:48px 0 16px}</style>
+</head>
+<body>
+
+<nav class="wrap topnav" aria-label="Навигация"><a href="index.html">← Все работы</a><a href="https://t.me/Zgarok">Связаться ↗</a></nav>
+<header class="wrap hero">
+  <div class="eyebrow">Нескучные финансы · продуктовый дизайн · 2026</div>
+  <h1>Кабинет клиента: <em>один интерфейс</em> для финдиректора и компании</h1>
+  <p class="lead">Перенёс работу с клиентом из Google Sheets в общий кабинет на отдельном поддомене. Финансовый директор фиксирует задачи и управленческие решения прямо на созвоне, а собственник и его команда видят ту же картину — и с компьютера, и с телефона.</p>
+  <dl class="facts">
+    <div><dt>Роль</dt><dd>Продуктовый дизайнер, ведущий проекта</dd></div>
+    <div><dt>Команда</dt><dd>Продакт, второй дизайнер</dd></div>
+    <div><dt>Срок</dt><dd>Около 6 месяцев</dd></div>
+    <div><dt>Статус</dt><dd>В проде, подключаем пользователей</dd></div>
+  </dl>
+  <div class="scores">
+    <div class="score"><b>4,0 → <span>4,8</span></b><small>оценка навигации на тестах, из 5</small></div>
+    <div class="score"><b>3,8 → <span>4,5</span></b><small>«Встречи и задачи», два раунда тестов</small></div>
+    <div class="score"><b><span>5,0</span></b><small>«Инструменты» с первого раунда</small></div>
+  </div>
+</header>
+
+<main>
+<section class="wrap">
+  <div class="sec-label"><i>01</i>Контекст</div>
+  <h2>Работа с клиентом жила в таблице, которую открывал только финдиректор</h2>
+  <p>Нескучные финансы ведут финансы малого и среднего бизнеса: за каждым клиентом закреплён финансовый директор (ФД), который строит управленческий учёт и вместе с собственником принимает решения.</p>
+  <p>Любое продуктовое решение сервиса сводится к трём North Star-метрикам:</p>
+  <div class="nsm">
+    <div class="on"><b>Норма управляемости</b>Сколько клиентов ведёт один ФД и сколько ФД — один куратор или дивизион без потери качества. Сейчас норма — 3 клиента на ФД.</div>
+    <div><b>LT клиентов</b>Как долго клиент остаётся с сервисом.</div>
+    <div><b>LT финдиров</b>Как долго ФД остаются в сервисе. Зависит от загрузки, а значит от дохода.</div>
+  </div>
+  <p>Кабинет клиента работает прежде всего на управляемость. Чем меньше ручной работы у ФД до, во время и после встречи, тем больше клиентов он может вести, а куратор видит работу ФД в общих реестрах, а не в разрозненных таблицах. Вторично кабинет влияет на LT клиента: собственник и его команда видят, что происходит, и включаются в работу.</p>
+  <p>Всё, о чём договаривались на встречах, — инструменты учёта, задачи, решения — лежало в дорожной карте клиента в Google Sheets. У ФД при этом была своя внутренняя платформа с реестром сделок и служебными данными.</p>
+  <div class="callout">
+    <p><b>Что не работало</b></p>
+    <ul class="list">
+      <li>Задачи и решения записывались после созвона. Часть терялась, часть искажалась при пересказе.</li>
+      <li>В дорожной карте по сути работал только ФД. Клиент заходил редко — посмотреть, когда ближайшая встреча.</li>
+      <li>Таблица была перегружена информацией, нужной ФД, но не клиенту, и не открывалась нормально с телефона.</li>
+      <li>ФД и клиент смотрели на разные документы и говорили о разных вещах.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="sec-label"><i>02</i>Цель и гипотезы</div>
+  <h2>Сделать создание задач и решений таким быстрым, чтобы это успевали делать на созвоне</h2>
+  <p>Главный сценарий — встреча ФД с клиентом. Если зафиксировать договорённость можно за пару секунд, не отвлекаясь от разговора, она попадает в систему сразу, а не «потом».</p>
+  <div class="hyp">
+    <div><b>Если</b> задачу или встречу можно создать одной строкой прямо во время созвона, <b>то</b> решения будут фиксироваться в момент обсуждения, <b>потому что</b> детали теряются именно между встречей и записью.</div>
+    <div><b>Если</b> ФД и клиент работают в одном интерфейсе с одними и теми же сущностями, <b>то</b> они начнут говорить на одном языке, <b>потому что</b> исчезнет пересказ из «своей» таблицы в «чужую».</div>
+  </div>
+  <p>Критерии успеха: доля задач и решений, созданных в кабинете во время встречи; регулярные входы клиента и его команды; доля сессий с телефона. Всё это работает на норму управляемости — сколько клиентов один ФД ведёт без потери качества.</p>
+  <p>Целевых значений пока нет: сначала замеряем стартовую точку после запуска, затем растим метрики от неё.</p>
+</section>
+
+<section class="wrap">
+  <div class="sec-label"><i>03</i>Исследование</div>
+  <h2>Глубинные интервью со всеми, кто ведёт клиента</h2>
+  <p>Я провёл 15 глубинных интервью с финансовыми директорами и их наставниками, аккаунт-менеджерами и продажниками. Клиентов в этом раунде не интервьюировали, поэтому их поведение мы восстанавливали по опыту команды, которая работает с ними каждый день.</p>
+  <div class="insights">
+    <div><span>Инсайт 1</span>Клиент почти не заходит в дорожную карту. Если заходит — чтобы узнать, когда ближайшая встреча.</div>
+    <div><span>Инсайт 2</span>Решения называют на созвоне, а записывают позже — и часть из них забывается.</div>
+    <div><span>Инсайт 3</span>Документ перегружен данными, которые нужны ФД, но не нужны клиенту.</div>
+    <div><span>Инсайт 4</span>Таблица неудобна для работы с сущностями и не работает с телефона.</div>
+  </div>
+  <h3>Аналог, на который я опирался</h3>
+  <p>Решение разделить внутреннюю платформу и общий кабинет пришлось защищать перед командой. Подтверждение нашлось в онлайн-образовании: в Skyeng преподаватель готовится на внутренней платформе, а занятие идёт в отдельном общем кабинете. Учитель и ученик видят одинаковый интерфейс и всегда говорят об одном и том же. Ровно эту модель мы перенесли на пару «ФД — клиент».</p>
+</section>
+
+<section class="wrap">
+  <div class="sec-label"><i>04</i>Решение</div>
+  <h2>Отдельный кабинет на поддомене, общий вход и одна картина для всех</h2>
+  <dl class="decisions">
+    <div><dt>Кабинет на поддомене</dt><dd>Кабинеты клиентов живут на <code style="font-family:var(--mono);font-size:.9em">client.platforma.expert</code>, отдельно от внутренней платформы ФД. Служебное — сигналы, акты, дни отдыха, реестр сделок — осталось на платформе, в кабинете только то, о чём ФД и клиент говорят вместе.</dd></div>
+    <div><dt>Один интерфейс</dt><dd>ФД, собственник и любой сотрудник клиента видят один и тот же кабинет. Поэтому все тексты написаны без привязки к роли: «пульс компании», а не «ваш пульс».</dd></div>
+    <div><dt>Новая вкладка</dt><dd>Из карточки сделки кабинет открывается в новой вкладке. На созвоне ФД демонстрирует только её и не рискует случайно показать внутреннюю платформу. Обратного перехода нет — он не нужен.</dd></div>
+    <div><dt>Общий вход</dt><dd>Один экран входа по почте и коду из письма. По почте и набору прав система решает, куда пустить: партнёра — на платформу, клиента — сразу в кабинет. Если у почты несколько кабинетов, появляется выбор и переключатель в шапке; если один — ни того, ни другого.</dd></div>
+    <div><dt>Доступ без паролей</dt><dd>Пользователь появляется, когда его почту подключают к платформе или к кабинету. Пять готовых ролей и роль «Свой вариант», статусы «Приглашен», «Активен», «Отключен», а меню строки показывает только действия, возможные в текущем статусе.</dd></div>
+    <div><dt>Быстрое создание</dt><dd>В «Встречах и задачах» одна строка «Добавить встречу или задачу»: пишешь суть, жмёшь Enter — готово. Тип и дата — по желанию, обязателен только текст. Это и есть сценарий «накидать во время созвона». После тестов убрали поля, которые на встрече никто бы не заполнял, и оставили чек-лист.</dd></div>
+    <div><dt>Шаблонные сущности</dt><dd>Инструменты, встречи, задачи, цели и управленческие решения устроены по одному шаблону и складываются в общие реестры. Реестры дают аналитику и статистику по работе ФД и помогают управлять её качеством.</dd></div>
+    <div><dt>Мобильная версия</dt><dd>Выпустили сразу вместе с десктопом: клиенту чаще удобнее открыть кабинет с телефона, чем таблицу.</dd></div>
+  </dl>
+</section>
+
+<div class="wide figure">
+  <div class="sec-label"><i>05</i>Схемы</div>
+  <div style="height:20px"></div>
+  <div class="scheme" data-w="1824" data-h="1084" style="--w:1824;--h:1084"><div class="scheme-inner"><div style="position: relative; width: 1824px; height: 1084px; background: #FFFFFF; font-family: 'Golos Text', 'PT Root UI', sans-serif; color: #1E293B">
+
+<svg width="111" height="8" viewBox="0 0 111 8" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 404px; top: 396px; width: 111px; height: 8px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="acc-ah-1" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#64748B" stroke="none" style="stroke: none; fill: #64748B; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 107 4" marker-end="url(#acc-ah-1)"></path></svg>
+<svg width="111" height="8" viewBox="0 0 111 8" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 856px; top: 396px; width: 111px; height: 8px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="acc-ah-2" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#64748B" stroke="none" style="stroke: none; fill: #64748B; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 107 4" marker-end="url(#acc-ah-2)"></path></svg>
+<svg width="111" height="8" viewBox="0 0 111 8" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 1308px; top: 396px; width: 111px; height: 8px; overflow: visible; fill: none; stroke: #1D23CD; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="acc-ah-3" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#1D23CD" stroke="none" style="stroke: none; fill: #1D23CD; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 107 4" marker-end="url(#acc-ah-3)"></path></svg>
+
+<div style="position: absolute; left: 64px; top: 56px; font-size: 32px; line-height: 40px; font-weight: 600; color: #0F172A">Как появляется пользователь</div>
+<div style="position: absolute; left: 64px; top: 104px; width: 1000px; font-size: 16px; line-height: 24px; color: #64748B">Пользователь создаётся, когда его почту подключают к кабинету клиента или к платформе. Пароля нет: вход по почте и коду из письма.</div>
+
+<div style="position: absolute; left: 412px; top: 372px; width: 96px; text-align: center; font-size: 13px; line-height: 16px; color: #475569">«Добавить»</div>
+<div style="position: absolute; left: 880px; top: 372px; width: 64px; text-align: center; font-size: 13px; line-height: 16px; color: #475569">письмо</div>
+<div style="position: absolute; left: 1316px; top: 372px; width: 96px; text-align: center; font-size: 13px; line-height: 16px; color: #1D23CD">первый вход</div>
+
+<div style="position: absolute; left: 64px; top: 168px; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 500; color: #64748B">1 · ДОБАВЛЕНИЕ В КАБИНЕТЕ</div>
+<div style="position: absolute; left: 64px; top: 200px; width: 340px; height: 400px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; padding: 18px 16px; gap: 12px">
+  <span style="font-size: 16px; line-height: 20px; font-weight: 600; color: #0F172A">Добавить пользователя</span>
+  <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; color: #1E293B">Email рабочий<span style="color: #EF4444">*</span></span><div style="height: 30px; box-sizing: border-box; border: 1.5px solid #797DE2; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; font-size: 12px; color: #0F172A">fm@company.ru</div></div>
+  <div style="display: flex; gap: 10px">
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; color: #1E293B">Фамилия<span style="color: #EF4444">*</span></span><div style="height: 30px; box-sizing: border-box; border: 1px solid #CBD5E1; border-radius: 8px; padding: 0 10px; display: flex; align-items: center"><div style="width: 60px; height: 6px; border-radius: 3px; background: #E2E8F0"></div></div></div>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; color: #1E293B">Имя и Отчество<span style="color: #EF4444">*</span></span><div style="height: 30px; box-sizing: border-box; border: 1px solid #CBD5E1; border-radius: 8px; padding: 0 10px; display: flex; align-items: center"><div style="width: 70px; height: 6px; border-radius: 3px; background: #E2E8F0"></div></div></div>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; color: #1E293B">Роль<span style="color: #EF4444">*</span></span><div style="height: 30px; box-sizing: border-box; border: 1px solid #CBD5E1; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: #0F172A"><span>Фин. менеджер (Частичные права доступа)</span><span style="color: #64748B">▾</span></div></div>
+  <div style="border-top: 1px solid #CBD5E1; border-bottom: 1px solid #CBD5E1; height: 40px; display: flex; align-items: center; justify-content: space-between"><span style="font-size: 13px; font-weight: 500; color: #0F172A">Права доступа</span><span style="font-size: 12px; color: #1D23CD">Показать ▾</span></div>
+  <div style="margin-top: auto; display: flex; justify-content: flex-end; gap: 8px">
+    <span style="height: 32px; padding: 0 14px; border-radius: 8px; background: #E7E8F9; color: #1D23CD; font-size: 12px; line-height: 32px">Отменить</span>
+    <span style="height: 32px; padding: 0 14px; border-radius: 8px; background: #1D23CD; color: #FFFFFF; font-size: 12px; line-height: 32px; font-weight: 500">Добавить</span>
+  </div>
+</div>
+
+<div style="position: absolute; left: 516px; top: 168px; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 500; color: #64748B">2 · СТАТУС «ПРИГЛАШЕН»</div>
+<div style="position: absolute; left: 516px; top: 200px; width: 340px; height: 400px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; padding: 18px 16px; gap: 12px">
+  <div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 14px; line-height: 20px; font-weight: 600; color: #0F172A">Пользователи и права доступа</span><span style="width: 20px; height: 20px; border-radius: 6px; background: #1D23CD; color: #FFFFFF; font-size: 14px; line-height: 20px; text-align: center">+</span></div>
+  <div style="display: flex; flex-direction: column">
+    <div style="height: 28px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #E2E8F0; font-size: 11px; color: #64748B"><span style="width: 110px">Пользователь</span><span style="flex: 1">Роль</span><span style="width: 78px">Статус</span></div>
+    <div style="height: 40px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #F1F5F9"><div style="width: 110px; display: flex; align-items: center; gap: 6px"><span style="width: 18px; height: 18px; border-radius: 50%; background: #F1F5F9"></span><div style="width: 70px; height: 7px; border-radius: 4px; background: #E2E8F0"></div></div><span style="flex: 1; font-size: 11px; color: #475569">Владелец</span><span style="width: 78px"><span style="font-size: 10px; padding: 2px 6px; border: 1px solid #797DE2; border-radius: 6px">Активен</span></span></div>
+    <div style="height: 40px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #F1F5F9"><div style="width: 110px; display: flex; align-items: center; gap: 6px"><span style="width: 18px; height: 18px; border-radius: 50%; background: #F1F5F9"></span><div style="width: 60px; height: 7px; border-radius: 4px; background: #E2E8F0"></div></div><span style="flex: 1; font-size: 11px; color: #475569">Ген. дир</span><span style="width: 78px"><span style="font-size: 10px; padding: 2px 6px; border: 1px solid #797DE2; border-radius: 6px">Активен</span></span></div>
+    <div style="height: 40px; display: flex; align-items: center; gap: 10px; background: #F8F9FE; border-bottom: 1px solid #F1F5F9"><div style="width: 110px; display: flex; align-items: center; gap: 6px"><span style="width: 18px; height: 18px; border-radius: 50%; background: #E7E8F9"></span><span style="font-size: 11px; color: #0F172A">fm@company.ru</span></div><span style="flex: 1; font-size: 11px; color: #475569">Фин. менеджер</span><span style="width: 78px"><span style="font-size: 10px; padding: 2px 6px; border: 1px solid #6EE7B7; border-radius: 6px; background: #ECFDF5; color: #047857">Приглашен</span></span></div>
+  </div>
+  <div style="margin-top: auto; align-self: center; height: 36px; padding: 0 16px; border-radius: 8px; background: #060728; color: #FFFFFF; font-size: 12px; line-height: 36px">Приглашение отправлено</div>
+</div>
+
+<div style="position: absolute; left: 968px; top: 168px; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 500; color: #64748B">3 · ПИСЬМО И ВХОД ПО КОДУ</div>
+<div style="position: absolute; left: 968px; top: 200px; width: 340px; height: 400px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column">
+  <div style="padding: 16px; display: flex; flex-direction: column; gap: 10px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0">
+    <div style="display: flex; align-items: center; gap: 8px"><span style="width: 24px; height: 24px; border-radius: 6px; background: #CBD5E1"></span><span style="font-size: 12px; font-weight: 500; color: #0F172A">Нескучные финансы</span><div style="flex: 1"></div><span style="font-size: 10px; color: #94A3B8">fm@company.ru</span></div>
+    <div style="width: 220px; height: 8px; border-radius: 4px; background: #CBD5E1"></div>
+    <div style="width: 260px; height: 6px; border-radius: 3px; background: #E2E8F0"></div>
+    <div style="width: 180px; height: 6px; border-radius: 3px; background: #E2E8F0"></div>
+  </div>
+  <div style="padding: 18px 16px; display: flex; flex-direction: column; gap: 12px">
+    <span style="font-size: 12px; color: #64748B">Вход</span>
+    <div style="height: 30px; box-sizing: border-box; border: 1px solid #CBD5E1; border-radius: 8px; padding: 0 10px; display: flex; align-items: center; font-size: 12px; color: #0F172A">fm@company.ru</div>
+    <span style="font-size: 15px; font-weight: 600; color: #0F172A">Введите код</span>
+    <div style="display: flex; gap: 8px">
+      <span style="width: 30px; height: 38px; box-sizing: border-box; border: 1.5px solid #1D23CD; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Roboto Mono', monospace; font-size: 15px; color: #0F172A">4</span>
+      <span style="width: 30px; height: 38px; box-sizing: border-box; border: 1.5px solid #1D23CD; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Roboto Mono', monospace; font-size: 15px; color: #0F172A">7</span>
+      <span style="width: 30px; height: 38px; box-sizing: border-box; border: 1px solid #CBD5E1; border-radius: 8px"></span>
+      <span style="width: 30px; height: 38px; box-sizing: border-box; border: 1px solid #CBD5E1; border-radius: 8px"></span>
+    </div>
+  </div>
+</div>
+
+<div style="position: absolute; left: 1420px; top: 168px; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 500; color: #1D23CD">4 · СТАТУС «АКТИВЕН»</div>
+<div style="position: absolute; left: 1420px; top: 200px; width: 340px; height: 400px; box-sizing: border-box; background: #FFFFFF; border: 1.5px solid #1D23CD; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; padding: 18px 16px; gap: 12px">
+  <span style="font-size: 14px; line-height: 20px; font-weight: 600; color: #0F172A">Пользователи и права доступа</span>
+  <div style="display: flex; flex-direction: column">
+    <div style="height: 28px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #E2E8F0; font-size: 11px; color: #64748B"><span style="width: 110px">Пользователь</span><span style="flex: 1">Роль</span><span style="width: 78px">Статус</span></div>
+    <div style="height: 40px; display: flex; align-items: center; gap: 10px; background: #F8F9FE; border-bottom: 1px solid #F1F5F9"><div style="width: 110px; display: flex; align-items: center; gap: 6px"><span style="width: 18px; height: 18px; border-radius: 50%; background: #E7E8F9"></span><span style="font-size: 11px; color: #0F172A">fm@company.ru</span></div><span style="flex: 1; font-size: 11px; color: #475569">Фин. менеджер</span><span style="width: 78px"><span style="font-size: 10px; padding: 2px 6px; border: 1px solid #797DE2; border-radius: 6px">Активен</span></span></div>
+  </div>
+  <div style="align-self: flex-end; width: 190px; box-sizing: border-box; border: 1px solid #CBD5E1; border-radius: 10px; padding: 6px 0; display: flex; flex-direction: column; font-size: 11px; color: #1E293B">
+    <span style="padding: 6px 12px; color: #EF4444">Отключить</span>
+  </div>
+  <span style="margin-top: auto; font-size: 12px; line-height: 16px; color: #475569">Меню строки по статусу: «Приглашен» — отправить повторно или отменить, «Активен» — отключить, «Отключен» — пригласить повторно.</span>
+</div>
+
+<div style="position: absolute; left: 64px; top: 688px; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 500; color: #64748B">КОМАНДА НФ В СПИСКЕ КЛИЕНТА</div>
+<div style="position: absolute; left: 64px; top: 720px; width: 792px; height: 300px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; padding: 18px 20px; gap: 6px">
+  <div style="height: 28px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #E2E8F0; font-size: 11px; color: #64748B"><span style="width: 180px">Пользователь</span><span style="width: 220px">Email</span><span style="flex: 1">Роль</span><span style="width: 80px">Статус</span></div>
+  <div style="height: 34px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #F1F5F9"><div style="width: 180px; display: flex; align-items: center; gap: 8px"><span style="width: 18px; height: 18px; border-radius: 50%; background: #F1F5F9"></span><div style="width: 100px; height: 7px; border-radius: 4px; background: #E2E8F0"></div></div><span style="width: 220px; font-family: 'Roboto Mono', monospace; font-size: 10px; color: #64748B">…@noboring-finance.ru</span><span style="flex: 1; display: flex; align-items: center; gap: 6px; font-size: 12px; color: #1E293B"><span style="width: 16px; height: 16px; border-radius: 4px; background: #EF4444; color: #FFFFFF; font-size: 7px; font-weight: 600; line-height: 16px; text-align: center">НФ</span>ФД</span><span style="width: 80px"><span style="font-size: 10px; padding: 2px 6px; border: 1px solid #797DE2; border-radius: 6px">Активен</span></span></div>
+  <div style="height: 34px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #F1F5F9"><div style="width: 180px; display: flex; align-items: center; gap: 8px"><span style="width: 18px; height: 18px; border-radius: 50%; background: #F1F5F9"></span><div style="width: 90px; height: 7px; border-radius: 4px; background: #E2E8F0"></div></div><span style="width: 220px; font-family: 'Roboto Mono', monospace; font-size: 10px; color: #64748B">…@noboring-finance.ru</span><span style="flex: 1; display: flex; align-items: center; gap: 6px; font-size: 12px; color: #1E293B"><span style="width: 16px; height: 16px; border-radius: 4px; background: #EF4444; color: #FFFFFF; font-size: 7px; font-weight: 600; line-height: 16px; text-align: center">НФ</span>Аккаунт менеджер</span><span style="width: 80px"><span style="font-size: 10px; padding: 2px 6px; border: 1px solid #797DE2; border-radius: 6px">Активен</span></span></div>
+  <div style="height: 34px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #F1F5F9"><div style="width: 180px; display: flex; align-items: center; gap: 8px"><span style="width: 18px; height: 18px; border-radius: 50%; background: #F1F5F9"></span><div style="width: 110px; height: 7px; border-radius: 4px; background: #E2E8F0"></div></div><span style="width: 220px; font-family: 'Roboto Mono', monospace; font-size: 10px; color: #64748B">…@noboring-finance.ru</span><span style="flex: 1; display: flex; align-items: center; gap: 6px; font-size: 12px; color: #1E293B"><span style="width: 16px; height: 16px; border-radius: 4px; background: #EF4444; color: #FFFFFF; font-size: 7px; font-weight: 600; line-height: 16px; text-align: center">НФ</span>Администратор дивизиона</span><span style="width: 80px"><span style="font-size: 10px; padding: 2px 6px; border: 1px solid #797DE2; border-radius: 6px">Активен</span></span></div>
+  <div style="height: 34px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #F1F5F9"><div style="width: 180px; display: flex; align-items: center; gap: 8px"><span style="width: 18px; height: 18px; border-radius: 50%; background: #F1F5F9"></span><div style="width: 80px; height: 7px; border-radius: 4px; background: #E2E8F0"></div></div><span style="width: 220px; font-family: 'Roboto Mono', monospace; font-size: 10px; color: #64748B">…@noboring-finance.ru</span><span style="flex: 1; display: flex; align-items: center; gap: 6px; font-size: 12px; color: #1E293B"><span style="width: 16px; height: 16px; border-radius: 4px; background: #EF4444; color: #FFFFFF; font-size: 7px; font-weight: 600; line-height: 16px; text-align: center">НФ</span>КДВ</span><span style="width: 80px"><span style="font-size: 10px; padding: 2px 6px; border: 1px solid #797DE2; border-radius: 6px">Активен</span></span></div>
+  <span style="margin-top: auto; font-size: 12px; line-height: 16px; color: #475569">Сотрудники НФ подключены к платформе и приходят в список кабинета оттуда. Их строки только для просмотра: доступом управляют на платформе.</span>
+</div>
+
+<div style="position: absolute; left: 968px; top: 688px; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 500; color: #64748B">РОЛИ И ПРАВА ДОСТУПА</div>
+<div style="position: absolute; left: 968px; top: 720px; width: 792px; height: 300px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; padding: 18px 20px; gap: 0">
+  <div style="height: 40px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #E2E8F0; font-size: 11px; line-height: 14px; color: #64748B"><span style="flex: 1">Раздел</span><span style="width: 200px">Владелец, Админ<br>полные права</span><span style="width: 240px">Собственник, Ген. дир, Фин. менеджер<br>частичные права</span></div>
+  <div style="height: 32px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #F1F5F9; font-size: 12px"><span style="flex: 1; color: #0F172A">Встречи и задачи</span><span style="width: 200px; color: #047857">Редактирование</span><span style="width: 240px; color: #047857">Редактирование</span></div>
+  <div style="height: 32px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #F1F5F9; font-size: 12px"><span style="flex: 1; color: #0F172A">Инструменты УУ</span><span style="width: 200px; color: #047857">Редактирование</span><span style="width: 240px; color: #047857">Редактирование</span></div>
+  <div style="height: 32px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #F1F5F9; font-size: 12px"><span style="flex: 1; color: #0F172A">Цели и УР</span><span style="width: 200px; color: #047857">Редактирование</span><span style="width: 240px; color: #047857">Редактирование</span></div>
+  <div style="height: 32px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #F1F5F9; font-size: 12px"><span style="flex: 1; color: #0F172A">Профиль компании</span><span style="width: 200px; color: #047857">Редактирование</span><span style="width: 240px; color: #047857">Редактирование</span></div>
+  <div style="height: 32px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #F1F5F9; font-size: 12px"><span style="flex: 1; color: #0F172A">Профили других пользователей</span><span style="width: 200px; color: #047857">Редактирование</span><span style="width: 240px; color: #B91C1C">Запрещено</span></div>
+  <div style="height: 32px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #F1F5F9; font-size: 12px"><span style="flex: 1; color: #0F172A">Права доступа и приглашения</span><span style="width: 200px; color: #047857">Редактирование</span><span style="width: 240px; color: #B91C1C">Запрещено</span></div>
+  <span style="margin-top: auto; font-size: 12px; line-height: 16px; color: #475569">Уровни: запрещено, просмотр, редактирование. Для особых случаев есть роль «Свой вариант» с ручной настройкой.</span>
+</div>
+
+</div></div></div>
+  <figcaption>Почту добавляют в разделе «Пользователи и права» — человек получает письмо и входит по коду. Команда НФ попадает в список с платформы.</figcaption>
+</div>
+
+<div class="wide figure" style="padding-top:48px">
+  <div class="scheme" data-w="1880" data-h="1060" style="--w:1880;--h:1060"><div class="scheme-inner"><div style="position: relative; width: 1880px; height: 1060px; background: #FFFFFF; font-family: 'Golos Text', 'PT Root UI', sans-serif; color: #1E293B">
+
+<svg width="79" height="8" viewBox="0 0 79 8" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 384px; top: 586px; width: 79px; height: 8px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="auth-ah-1" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#64748B" stroke="none" style="stroke: none; fill: #64748B; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 75 4" marker-end="url(#auth-ah-1)"></path></svg>
+<svg width="60" height="8" viewBox="0 0 60 8" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 1064px; top: 586px; width: 60px; height: 8px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M 0 4 L 60 4"></path></svg>
+<svg width="8" height="560" viewBox="0 0 8 560" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 1120px; top: 310px; width: 8px; height: 560px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M 4 0 L 4 560"></path></svg>
+<svg width="179" height="8" viewBox="0 0 179 8" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 1124px; top: 306px; width: 179px; height: 8px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="auth-ah-2" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#64748B" stroke="none" style="stroke: none; fill: #64748B; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 175 4" marker-end="url(#auth-ah-2)"></path></svg>
+<svg width="179" height="8" viewBox="0 0 179 8" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 1124px; top: 586px; width: 179px; height: 8px; overflow: visible; fill: none; stroke: #1D23CD; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="auth-ah-3" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#1D23CD" stroke="none" style="stroke: none; fill: #1D23CD; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 175 4" marker-end="url(#auth-ah-3)"></path></svg>
+<svg width="179" height="8" viewBox="0 0 179 8" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 1124px; top: 866px; width: 179px; height: 8px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="auth-ah-4" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#64748B" stroke="none" style="stroke: none; fill: #64748B; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 175 4" marker-end="url(#auth-ah-4)"></path></svg>
+<svg width="8" height="59" viewBox="0 0 8 59" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 1480px; top: 420px; width: 8px; height: 59px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 6 6"><defs><marker id="auth-ah-5" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#64748B" stroke="none" style="stroke: none; fill: #64748B; fill: context-stroke; stroke-dasharray: none"></path></marker></defs><path d="M 4 0 L 4 55" marker-end="url(#auth-ah-5)"></path></svg>
+<svg width="8" height="59" viewBox="0 0 8 59" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 1480px; top: 701px; width: 8px; height: 59px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="auth-ah-6" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#64748B" stroke="none" style="stroke: none; fill: #64748B; fill: context-stroke"></path></marker></defs><path d="M 4 59 L 4 4" marker-end="url(#auth-ah-6)"></path></svg>
+
+<svg width="79" height="8" viewBox="0 0 79 8" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 744px; top: 586px; width: 79px; height: 8px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="auth-ah-7" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#64748B" stroke="none" style="stroke: none; fill: #64748B; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 75 4" marker-end="url(#auth-ah-7)"></path></svg>
+<div style="position: absolute; left: 64px; top: 56px; font-size: 32px; line-height: 40px; font-weight: 600; color: #0F172A">Один вход для платформы и кабинетов</div>
+<div style="position: absolute; left: 64px; top: 104px; width: 900px; font-size: 16px; line-height: 24px; color: #64748B">Человек вводит почту и код из письма. По почте и набору прав система решает, куда его пустить.</div>
+
+<div style="position: absolute; left: 64px; top: 358px; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 500; color: #64748B">ОБЩИЙ ВХОД</div>
+<div style="position: absolute; left: 64px; top: 390px; width: 320px; height: 400px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; padding: 32px 28px; display: flex; flex-direction: column; gap: 14px">
+  <div style="width: 32px; height: 32px; border-radius: 8px; background: #CBD5E1"></div>
+  <span style="font-size: 22px; line-height: 28px; font-weight: 600; color: #0F172A">Вход</span>
+  <div style="display: flex; flex-direction: column; gap: 6px"><label for="auth-email" style="font-size: 12px; color: #64748B">Почта</label><input id="auth-email" type="email" readonly placeholder="Введите почту" style="height: 38px; box-sizing: border-box; border: 1px solid #CBD5E1; border-radius: 8px; padding: 0 12px; font-family: inherit; font-size: 13px; color: #1E293B; background: #FFFFFF"></div>
+  <button type="button" style="margin-top: 6px; height: 42px; border: none; border-radius: 8px; background: #1D23CD; color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 500">Продолжить</button>
+  <span style="margin-top: auto; font-size: 11px; line-height: 15px; color: #94A3B8">Один экран для всех: партнёров и клиентов.</span>
+</div>
+
+<div style="position: absolute; left: 464px; top: 408px; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 500; color: #64748B">КОД ИЗ ПИСЬМА</div>
+<div style="position: absolute; left: 464px; top: 440px; width: 280px; height: 300px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; padding: 28px 24px; display: flex; flex-direction: column; gap: 14px">
+  <div style="width: 28px; height: 28px; border-radius: 8px; background: #CBD5E1"></div>
+  <span style="font-size: 20px; line-height: 28px; font-weight: 600; color: #0F172A">Введите код</span>
+  <div style="display: flex; gap: 8px">
+    <span style="width: 32px; height: 40px; box-sizing: border-box; border: 1.5px solid #1D23CD; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Roboto Mono', monospace; font-size: 16px; color: #0F172A">4</span>
+    <span style="width: 32px; height: 40px; box-sizing: border-box; border: 1.5px solid #1D23CD; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Roboto Mono', monospace; font-size: 16px; color: #0F172A">7</span>
+    <span style="width: 32px; height: 40px; box-sizing: border-box; border: 1px solid #CBD5E1; border-radius: 8px"></span>
+    <span style="width: 32px; height: 40px; box-sizing: border-box; border: 1px solid #CBD5E1; border-radius: 8px"></span>
+  </div>
+</div>
+
+<div style="position: absolute; left: 824px; top: 510px; width: 240px; height: 160px; box-sizing: border-box; padding: 8px; display: flex; align-items: center; justify-content: center; text-align: center; background: #E7E8F9; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); font-size: 14px; line-height: 20px; color: #181CA5"><span><b>Почта и права</b><br>кто это?</span></div>
+
+<div style="position: absolute; left: 1158px; top: 282px; width: 112px; text-align: center; font-size: 13px; line-height: 16px; color: #475569">партнёр</div>
+<div style="position: absolute; left: 1139px; top: 562px; width: 150px; text-align: center; font-size: 13px; line-height: 16px; color: #1D23CD">клиент, один кабинет</div>
+<div style="position: absolute; left: 1142px; top: 842px; width: 144px; text-align: center; font-size: 13px; line-height: 16px; color: #475569">клиент, несколько</div>
+<div style="position: absolute; left: 1496px; top: 442px; width: 296px; font-size: 13px; line-height: 16px; color: #475569">через карточку сделки, в новой вкладке</div>
+<div style="position: absolute; left: 1496px; top: 722px; width: 112px; font-size: 13px; line-height: 16px; color: #475569">выбрал кабинет</div>
+
+<div style="position: absolute; left: 1304px; top: 172px; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 500; color: #64748B">ПЛАТФОРМА</div>
+<div style="position: absolute; left: 1304px; top: 200px; width: 360px; height: 220px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column">
+  <div style="height: 38px; display: flex; align-items: center; gap: 8px; padding: 0 14px; border-bottom: 1px solid #E2E8F0"><div style="width: 18px; height: 18px; border-radius: 5px; background: #CBD5E1"></div><span style="font-size: 12px; font-weight: 500; color: #0F172A">Реестр сделок</span></div>
+  <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 9px">
+    <div style="display: flex; gap: 10px"><div style="width: 110px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="width: 50px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="flex: 1; height: 8px; border-radius: 4px; background: #E2E8F0"></div></div>
+    <div style="display: flex; gap: 10px"><div style="width: 110px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="width: 50px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="flex: 1; height: 8px; border-radius: 4px; background: #E2E8F0"></div></div>
+    <div style="display: flex; gap: 10px"><div style="width: 110px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="width: 50px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="flex: 1; height: 8px; border-radius: 4px; background: #E2E8F0"></div></div>
+  </div>
+  <div style="margin-top: auto; padding: 10px 14px; border-top: 1px solid #F1F5F9; font-size: 12px; line-height: 16px; color: #475569">Партнёр (ФД, наставник) попадает на платформу. Окно выбора кабинетов ему не показываем.</div>
+</div>
+
+<div style="position: absolute; left: 1304px; top: 452px; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 500; color: #1D23CD">КАБИНЕТ КЛИЕНТА</div>
+<div style="position: absolute; left: 1304px; top: 480px; width: 360px; height: 220px; box-sizing: border-box; background: #FFFFFF; border: 1.5px solid #1D23CD; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column">
+  <div style="height: 38px; display: flex; align-items: center; gap: 8px; padding: 0 14px; border-bottom: 1px solid #E2E8F0"><div style="width: 18px; height: 18px; border-radius: 5px; background: #CBD5E1"></div><span style="font-size: 12px; font-weight: 500; color: #0F172A">ООО «Компания» <span style="color: #94A3B8">▾</span></span><div style="flex: 1"></div><span style="font-family: 'Roboto Mono', monospace; font-size: 10px; color: #64748B">client.platforma.expert</span></div>
+  <div style="padding: 12px 14px; display: flex; gap: 14px; align-items: center">
+    <div style="width: 64px; height: 64px; flex: none; border-radius: 50%; background: conic-gradient(#10B981 0 75%, #E2E8F0 75% 100%); display: flex; align-items: center; justify-content: center"><div style="width: 46px; height: 46px; border-radius: 50%; background: #FFFFFF"></div></div>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 8px"><span style="font-size: 15px; font-weight: 600; color: #0F172A">Привет!</span><div style="width: 140px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="width: 100px; height: 8px; border-radius: 4px; background: #E2E8F0"></div></div>
+  </div>
+  <div style="margin-top: auto; padding: 10px 14px; border-top: 1px solid #F1F5F9; font-size: 12px; line-height: 16px; color: #475569">Один кабинет: сразу внутрь, без выбора. Несколько: в шапке есть переключатель между ними.</div>
+</div>
+
+<div style="position: absolute; left: 1304px; top: 732px; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 500; color: #64748B">ВЫБОР КАБИНЕТА</div>
+<div style="position: absolute; left: 1304px; top: 760px; width: 360px; height: 220px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column">
+  <div style="padding: 14px 14px 0; display: flex; flex-direction: column; gap: 8px">
+    <span style="font-size: 14px; font-weight: 600; color: #0F172A">Выберите кабинет, в который хотите войти</span>
+    <div style="height: 34px; box-sizing: border-box; border: 1.5px solid #1D23CD; background: #F8F9FE; border-radius: 8px; display: flex; align-items: center; padding: 0 12px; font-size: 12px; color: #0F172A">ООО «Тепленькая пошла»</div>
+    <div style="height: 34px; box-sizing: border-box; border: 1px solid #CBD5E1; border-radius: 8px; display: flex; align-items: center; padding: 0 12px; font-size: 12px; color: #0F172A">ООО «Лаборатория предпринимательства»</div>
+  </div>
+  <div style="margin-top: auto; padding: 10px 14px; border-top: 1px solid #F1F5F9; font-size: 12px; line-height: 16px; color: #475569">Одна почта, несколько кабинетов: например, финменеджер в двух компаниях.</div>
+</div>
+
+</div></div></div>
+  <figcaption>Партнёру окно выбора кабинетов не показываем: в кабинет он попадает через карточку сделки на платформе.</figcaption>
+</div>
+
+<div class="wide figure" style="padding-top:48px;padding-bottom:56px">
+  <div class="scheme" data-w="1768" data-h="1064" style="--w:1768;--h:1064"><div class="scheme-inner"><div style="position: relative; width: 1768px; height: 1064px; background: #FFFFFF; font-family: 'Golos Text', 'PT Root UI', sans-serif; color: #1E293B">
+
+<svg width="120" height="8" viewBox="0 0 120 8" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 404px; top: 376px; width: 120px; height: 8px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M 0 4 L 120 4"></path></svg>
+<svg width="8" height="160" viewBox="0 0 8 160" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 520px; top: 380px; width: 8px; height: 160px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M 4 0 L 4 160"></path></svg>
+<svg width="119" height="8" viewBox="0 0 119 8" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 524px; top: 536px; width: 119px; height: 8px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="nav-ah-1" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#64748B" stroke="none" style="stroke: none; fill: #64748B; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 115 4" marker-end="url(#nav-ah-1)"></path></svg>
+
+<svg width="120" height="8" viewBox="0 0 120 8" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 404px; top: 816px; width: 120px; height: 8px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M 0 4 L 120 4"></path></svg>
+<svg width="8" height="160" viewBox="0 0 8 160" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 520px; top: 660px; width: 8px; height: 160px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M 4 0 L 4 160"></path></svg>
+<svg width="119" height="8" viewBox="0 0 119 8" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 524px; top: 656px; width: 119px; height: 8px; overflow: visible; fill: none; stroke: #64748B; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="nav-ah-2" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#64748B" stroke="none" style="stroke: none; fill: #64748B; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 115 4" marker-end="url(#nav-ah-2)"></path></svg>
+
+<svg width="159" height="8" viewBox="0 0 159 8" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 984px; top: 596px; width: 159px; height: 8px; overflow: visible; fill: none; stroke: #1D23CD; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="nav-ah-3" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#1D23CD" stroke="none" style="stroke: none; fill: #1D23CD; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 155 4" marker-end="url(#nav-ah-3)"></path></svg>
+
+<div style="position: absolute; left: 64px; top: 56px; font-size: 32px; line-height: 40px; font-weight: 600; color: #0F172A">Из платформы в кабинет клиента</div>
+<div style="position: absolute; left: 64px; top: 104px; width: 900px; font-size: 16px; line-height: 24px; color: #64748B">Кабинет открывается в новой вкладке на поддомене client. На созвоне ФД показывает только эту вкладку.</div>
+
+<div style="position: absolute; left: 64px; top: 168px; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 500; color: #64748B">ПЛАТФОРМА · РЕЕСТР СДЕЛОК</div>
+<div style="position: absolute; left: 64px; top: 200px; width: 340px; height: 360px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column">
+  <div style="height: 44px; display: flex; align-items: center; gap: 8px; padding: 0 14px; border-bottom: 1px solid #E2E8F0">
+    <div style="width: 20px; height: 20px; border-radius: 6px; background: #CBD5E1"></div>
+    <span style="font-size: 13px; font-weight: 500; color: #0F172A">Реестр сделок</span>
+    <div style="flex: 1"></div>
+    <div style="width: 16px; height: 16px; border-radius: 50%; background: #E2E8F0"></div>
+  </div>
+  <div style="padding: 14px; display: flex; flex-direction: column; gap: 10px">
+    <div style="width: 110px; height: 10px; border-radius: 5px; background: #CBD5E1"></div>
+    <div style="border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column">
+      <div style="height: 28px; display: flex; align-items: center; gap: 12px; padding: 0 10px; background: #F1F5F9"><span style="width: 104px; font-size: 11px; color: #64748B">Клиент</span><span style="width: 56px; font-size: 11px; color: #64748B">Пульс</span><span style="font-size: 11px; color: #64748B">ID клиента</span></div>
+      <div style="height: 34px; display: flex; align-items: center; gap: 12px; padding: 0 10px; border-top: 1px solid #F1F5F9"><div style="width: 104px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="width: 56px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="flex: 1; height: 8px; border-radius: 4px; background: #E2E8F0"></div></div>
+      <div style="height: 34px; display: flex; align-items: center; gap: 12px; padding: 0 10px; border-top: 1px solid #F1F5F9"><div style="width: 104px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="width: 56px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="flex: 1; height: 8px; border-radius: 4px; background: #E2E8F0"></div></div>
+      <div style="height: 34px; display: flex; align-items: center; gap: 12px; padding: 0 10px; border-top: 1px solid #D1D2F5; background: #E7E8F9"><span style="width: 104px; font-size: 12px; font-weight: 500; color: #1D23CD; text-decoration: underline; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">ООО «Центр…»</span><div style="width: 56px; height: 8px; border-radius: 4px; background: #D1D2F5"></div><div style="flex: 1; height: 8px; border-radius: 4px; background: #D1D2F5"></div></div>
+      <div style="height: 34px; display: flex; align-items: center; gap: 12px; padding: 0 10px; border-top: 1px solid #F1F5F9"><div style="width: 104px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="width: 56px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="flex: 1; height: 8px; border-radius: 4px; background: #E2E8F0"></div></div>
+      <div style="height: 34px; display: flex; align-items: center; gap: 12px; padding: 0 10px; border-top: 1px solid #F1F5F9"><div style="width: 104px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="width: 56px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="flex: 1; height: 8px; border-radius: 4px; background: #E2E8F0"></div></div>
+      <div style="height: 34px; display: flex; align-items: center; gap: 12px; padding: 0 10px; border-top: 1px solid #F1F5F9"><div style="width: 104px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="width: 56px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="flex: 1; height: 8px; border-radius: 4px; background: #E2E8F0"></div></div>
+    </div>
+  </div>
+</div>
+
+<div style="position: absolute; left: 64px; top: 608px; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 500; color: #64748B">ПЛАТФОРМА · ПРОФИЛЬ ФД</div>
+<div style="position: absolute; left: 64px; top: 640px; width: 340px; height: 360px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; align-items: center; padding: 18px 14px; gap: 12px">
+  <div style="width: 40px; height: 40px; border-radius: 50%; background: #E2E8F0"></div>
+  <div style="width: 120px; height: 10px; border-radius: 5px; background: #CBD5E1"></div>
+  <div style="align-self: stretch; display: flex; gap: 4px; padding: 3px; border: 1px solid #E2E8F0; border-radius: 8px">
+    <span style="flex: 1; text-align: center; font-size: 11px; line-height: 24px; color: #64748B">Профиль</span>
+    <span style="flex: 1; text-align: center; font-size: 11px; line-height: 22px; color: #1D23CD; font-weight: 500; border: 1px solid #1D23CD; border-radius: 6px; background: #E7E8F9">Клиенты</span>
+    <span style="flex: 1; text-align: center; font-size: 11px; line-height: 24px; color: #64748B">Отдых</span>
+    <span style="flex: 1; text-align: center; font-size: 11px; line-height: 24px; color: #64748B">Доход</span>
+  </div>
+  <div style="align-self: stretch; display: flex; flex-direction: column; gap: 8px">
+    <div style="height: 56px; box-sizing: border-box; border: 1.5px solid #1D23CD; background: #F8F9FE; border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px"><span style="font-size: 12px; font-weight: 500; color: #1D23CD">ООО «Центр…»</span><div style="width: 140px; height: 6px; border-radius: 3px; background: #D1D2F5"></div></div>
+    <div style="height: 56px; box-sizing: border-box; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px"><div style="width: 150px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="width: 110px; height: 6px; border-radius: 3px; background: #F1F5F9"></div></div>
+    <div style="height: 56px; box-sizing: border-box; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px"><div style="width: 130px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="width: 90px; height: 6px; border-radius: 3px; background: #F1F5F9"></div></div>
+  </div>
+</div>
+
+<div style="position: absolute; left: 644px; top: 388px; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 500; color: #64748B">ПЛАТФОРМА · КАРТОЧКА СДЕЛКИ</div>
+<div style="position: absolute; left: 644px; top: 420px; width: 340px; height: 360px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; padding: 16px 14px; gap: 14px">
+  <div style="display: flex; align-items: center; gap: 8px">
+    <span style="font-size: 14px; color: #64748B">←</span>
+    <span style="font-size: 14px; font-weight: 600; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">ООО «Центр дентальной…»</span>
+  </div>
+  <div style="display: flex; gap: 10px"><div style="width: 70px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="width: 40px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="width: 60px; height: 8px; border-radius: 4px; background: #E2E8F0"></div></div>
+  <div style="display: flex; gap: 4px; padding: 3px; border: 1px solid #E2E8F0; border-radius: 8px">
+    <span style="flex: 1.3; text-align: center; font-size: 10px; line-height: 22px; color: #1E293B; border: 1px solid #CBD5E1; border-radius: 6px; white-space: nowrap">Общая информация</span>
+    <span style="flex: 0.7; text-align: center; font-size: 10px; line-height: 24px; color: #64748B">Акты</span>
+    <span style="flex: 1.3; text-align: center; font-size: 10px; line-height: 22px; color: #1D23CD; font-weight: 600; border: 1.5px solid #1D23CD; border-radius: 6px; background: #E7E8F9; white-space: nowrap">Кабинет клиента ↗</span>
+  </div>
+  <div style="height: 34px; border-radius: 8px; background: #F1F5F9"></div>
+  <div style="display: flex; justify-content: space-between"><div style="width: 120px; height: 8px; border-radius: 4px; background: #E2E8F0"></div><div style="width: 40px; height: 8px; border-radius: 4px; background: #E2E8F0"></div></div>
+  <div style="flex: 1; border: 1px solid #E2E8F0; border-radius: 8px; display: flex; align-items: center; justify-content: center">
+    <div style="width: 84px; height: 84px; border-radius: 50%; border: 12px solid #E2E8F0; box-sizing: border-box"></div>
+  </div>
+</div>
+
+<div style="position: absolute; left: 1144px; top: 328px; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 500; color: #1D23CD">КАБИНЕТ КЛИЕНТА · ПОДДОМЕН CLIENT</div>
+<div style="position: absolute; left: 1424px; top: 324px; width: 280px; height: 24px; box-sizing: border-box; border-radius: 12px; background: #ECFDF5; border: 1px solid #A7F3D0; font-size: 12px; line-height: 22px; text-align: center; color: #047857">Эту вкладку ФД показывает на созвоне</div>
+<div style="position: absolute; left: 1144px; top: 360px; width: 560px; height: 480px; box-sizing: border-box; background: #FFFFFF; border: 1.5px solid #1D23CD; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column">
+  <div style="height: 36px; display: flex; align-items: flex-end; gap: 4px; padding: 0 10px; background: #F1F5F9">
+    <span style="height: 28px; padding: 0 14px; font-size: 11px; line-height: 28px; color: #94A3B8; border-radius: 8px 8px 0 0">Платформа</span>
+    <span style="height: 28px; padding: 0 14px; font-size: 11px; line-height: 28px; color: #0F172A; font-weight: 500; background: #FFFFFF; border-radius: 8px 8px 0 0">Кабинет клиента</span>
+  </div>
+  <div style="height: 40px; display: flex; align-items: center; padding: 0 12px; border-bottom: 1px solid #E2E8F0">
+    <div style="flex: 1; height: 26px; border-radius: 13px; background: #F8FAFC; border: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: center; font-family: 'Roboto Mono', monospace; font-size: 12px; color: #64748B"><span><b style="color: #1D23CD; font-weight: 500">client.</b>platforma.expert/394</span></div>
+  </div>
+  <div style="height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 18px; border-bottom: 1px solid #E2E8F0">
+    <div style="width: 22px; height: 22px; border-radius: 6px; background: #CBD5E1"></div>
+    <span style="font-size: 13px; font-weight: 500; color: #0F172A">ООО «Центр дентальной травматологии»</span>
+  </div>
+  <div style="flex: 1; padding: 20px 56px; display: flex; flex-direction: column; gap: 14px">
+    <span style="font-size: 22px; line-height: 28px; font-weight: 600; color: #0F172A">Привет!</span>
+    <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; color: #64748B">Отрасль компании</span><span style="font-size: 15px; font-weight: 500; color: #0F172A">Медицина</span></div>
+    <div style="height: 150px; border: 1px solid #D1D2F5; border-radius: 10px; display: flex; align-items: center; justify-content: center">
+      <div style="width: 104px; height: 104px; border-radius: 50%; background: conic-gradient(#10B981 0 75%, #E2E8F0 75% 100%); display: flex; align-items: center; justify-content: center"><div style="width: 78px; height: 78px; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Roboto Mono', monospace; font-size: 16px; font-weight: 500; color: #0F172A">75%</div></div>
+    </div>
+    <div style="display: flex; gap: 10px"><div style="flex: 1; height: 44px; border-radius: 8px; background: #F1F5F9"></div><div style="flex: 1; height: 44px; border-radius: 8px; background: #F1F5F9"></div></div>
+  </div>
+</div>
+
+<div style="position: absolute; left: 452px; top: 368px; width: 24px; height: 24px; border-radius: 50%; background: #0F172A; color: #FFFFFF; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center">1</div>
+<div style="position: absolute; left: 452px; top: 808px; width: 24px; height: 24px; border-radius: 50%; background: #0F172A; color: #FFFFFF; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center">1</div>
+<div style="position: absolute; left: 1052px; top: 588px; width: 24px; height: 24px; border-radius: 50%; background: #1D23CD; color: #FFFFFF; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center">2</div>
+<div style="position: absolute; left: 1012px; top: 556px; width: 104px; text-align: center; font-size: 13px; line-height: 16px; color: #1D23CD">новая вкладка</div>
+
+<div style="position: absolute; left: 1144px; top: 880px; width: 560px; display: flex; flex-direction: column; gap: 14px">
+  <div style="display: flex; gap: 12px; align-items: flex-start"><span style="flex: none; width: 24px; height: 24px; border-radius: 50%; background: #0F172A; color: #FFFFFF; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center">1</span><span style="font-size: 14px; line-height: 22px; color: #334155">ФД открывает карточку сделки из реестра сделок или из своего профиля, вкладка «Клиенты».</span></div>
+  <div style="display: flex; gap: 12px; align-items: flex-start"><span style="flex: none; width: 24px; height: 24px; border-radius: 50%; background: #1D23CD; color: #FFFFFF; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center">2</span><span style="font-size: 14px; line-height: 22px; color: #334155">Вкладка «Кабинет клиента» открывает кабинет в новой вкладке браузера. Обратного перехода нет: платформа остаётся в соседней вкладке.</span></div>
+</div>
+
+</div></div></div>
+  <figcaption>Два пути к карточке сделки и один — в кабинет, всегда в новой вкладке.</figcaption>
+</div>
+
+<section class="proto" aria-label="Живой прототип кабинета клиента">
+  <div class="proto-bar">
+    <strong>Живой прототип кабинета</strong>
+    <span>Всё кликается: разделы, создание задач, пользователи и права.</span>
+    <a href="nf-client-cabinet/" target="_blank" rel="noopener">Открыть в новой вкладке ↗</a>
+  </div>
+  <iframe src="nf-client-cabinet/" title="Прототип кабинета клиента" loading="lazy" title="Прототип кабинета клиента Нескучных финансов"></iframe>
+</section>
+
+<section class="wrap">
+  <div class="sec-label"><i>06</i>Валидация</div>
+  <h2>Два раунда юзабилити-тестов</h2>
+  <p>Отдельно тестировал инструменты и кабинет целиком: по 5–7 человек в раунде, оценка по пятибалльной шкале. Респондентов подбирал на контрасте: ФД с минимальным и с максимальным оттоком клиентов, кураторы ФД и аккаунт-менеджеры. Так в выборку попали и сильные практики, и те, кому кабинет нужнее всего.</p>
+  <p>Каждое замечание на доске разбора получало статус: «Правка», «Правка UI», «Бэклог» или «Ресёрч». Так после теста сразу было видно, что чиним сейчас, а что откладываем.</p>
+  <h3>Что поменяли по итогам тестов</h3>
+  <div class="changes">
+    <div>
+      <b>Инструменты и навигация</b>
+      <ul class="list">
+        <li>Пересобрали главную и навигацию между разделами.</li>
+        <li>В реестр инструментов добавили статус сделки, сегмент клиента и столбец «Действующий ФД клиента».</li>
+        <li>Разделили плановые и фактические даты начала и окончания внедрения, а сроки связали со справочником норм.</li>
+        <li>Статус инструмента меняется прямо в шапке карточки, для отмены появилась причина.</li>
+        <li>Подключили Яндекс Метрику с логом действий, чтобы считать метрики после запуска.</li>
+      </ul>
+    </div>
+    <div>
+      <b>Встречи и задачи</b>
+      <ul class="list">
+        <li>Респонденты не стали бы заполнять поля «Ожидания», «Результат встречи» и «Следующие шаги» — их убрали, а «План встречи» превратили в простой чек-лист.</li>
+        <li>Статусы упростили: различать «Завершена» и «Выполнена» никому не было нужно, зато не хватало «В работе».</li>
+        <li>Для отменённой встречи добавили причину, в меню — пункт «Мои задачи», в реестр — фильтр по непрочитанным.</li>
+        <li>Подсказали, какие задачи увидит клиент, а какие останутся только в работе ФД.</li>
+      </ul>
+    </div>
+  </div>
+  <p>В бэклог ушли идеи, которые пришли от самих респондентов: регулярные задачи, создание задачи из пункта чек-листа, шаблоны чек-листов и объединение задач вокруг общей цели клиента. Фильтрацию в «Встречах и задачах» не трогали — она хорошо показала себя на тестах.</p>
+  <div class="tbl">
+  <table class="tests">
+    <thead><tr><th>Что тестировали</th><th>Раунд 1</th><th>Раунд 2</th></tr></thead>
+    <tbody>
+      <tr><td>Навигация</td><td class="n">4,0</td><td class="n"><b>4,8</b></td></tr>
+      <tr><td>Встречи и задачи</td><td class="n">3,8</td><td class="n"><b>4,5</b></td></tr>
+      <tr><td>Инструменты</td><td class="n"><b>5,0</b></td><td class="n">—</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="sec-label"><i>07</i>Результат</div>
+  <h2>Кабинет в проде, метрики собираем</h2>
+  <p>Всё, что есть в прототипе, уже работает в продукте: его обвешивают метриками и подключают пользователей. Цифр «до/после» пока нет: сначала замерим стартовую точку, затем будем растить метрики.</p>
+  <div class="callout"><p class="quote">До запуска задачи и решения создавались после встречи, часть из них забывалась, а в дорожной карте по сути работал только ФД.</p></div>
+  <div class="metrics">
+    <div><b>Метрика 1</b>Доля задач и решений, созданных в кабинете в день встречи</div>
+    <div><b>Метрика 2</b>Частота входов собственника и команды клиента</div>
+    <div><b>Метрика 3</b>Время от начала создания до сохранения задачи</div>
+    <div><b>Метрика 4</b>Доля сессий с телефона</div>
+    <div style="grid-column:1/-1;border-style:solid"><b>North Star</b>Норма управляемости: сколько клиентов ведёт один ФД без потери качества. Стартовая норма — 3. Вторично следим за LT клиентов</div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="sec-label"><i>08</i>Мой вклад</div>
+  <h2>Что сделал я</h2>
+  <ol class="contrib">
+    <li>Провёл глубинные интервью с ФД, наставниками, аккаунт-менеджерами и продажниками и собрал из них требования к кабинету.</li>
+    <li>Заложил навигационную архитектуру: кабинет на поддомене, общий вход, маршрутизацию по почте и правам, переход из карточки сделки в новой вкладке.</li>
+    <li>Обосновал команде разделение платформы и кабинета, опираясь на модель Skyeng.</li>
+    <li>Придумал шаблонный подход к сущностям — инструментам, встречам, задачам, целям и решениям, — на котором держатся общие реестры.</li>
+    <li>Спроектировал быстрое создание задач и встреч, доступы и роли, мобильную версию.</li>
+    <li>Провёл два раунда юзабилити-тестов и довёл оценки до 4,5–4,8 из 5.</li>
+    <li>Написал тексты интерфейса, редактируя их с помощью нейросети по единым правилам: без «вы/ваш» про компанию и без названия роли читателя.</li>
+  </ol>
+  <p>Второй дизайнер помогал довести макеты до финала, продакт отвечал за приоритеты и запуск.</p>
+</section>
+</main>
+
+<footer class="wrap"><div class="foot-links"><a href="index.html">← Все работы</a><a href="mailto:maifor@gmail.com">Обсудить проект</a></div>Сергей Степанов · Продуктовый дизайнер</footer>
+
+<script>
+(function(){
+  function fit(){
+    document.querySelectorAll('.scheme').forEach(function(el){
+      var w = +el.dataset.w, h = +el.dataset.h, inner = el.firstElementChild;
+      var s = Math.min(1, el.clientWidth / w);
+      inner.style.transform = 'scale(' + s + ')';
+      el.style.height = Math.ceil(h * s) + 'px';
+    });
+  }
+  fit();
+  window.addEventListener('resize', fit);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>
