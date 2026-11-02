@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Медбриф AI: ИИ-ресепшн, который готовит пациента к визиту — Сергей Степанов</title><meta name="description" content="ИИ-ресепшн в мобильном приложении готовит пациента к визиту: собирает анамнез в чате, достаёт данные из выписок, подсказывает анализы и передаёт врачу краткую карточку."><link rel="canonical" href="https://zgarok.github.io/case-medbrief.html"><meta property="og:type" content="website"><meta property="og:locale" content="ru_RU"><meta property="og:site_name" content="Сергей Степанов — продуктовый дизайнер"><meta property="og:title" content="Медбриф AI: ИИ-ресепшн, который готовит пациента к визиту — Сергей Степанов"><meta property="og:description" content="ИИ-ресепшн в мобильном приложении готовит пациента к визиту: собирает анамнез в чате, достаёт данные из выписок, подсказывает анализы и передаёт врачу краткую карточку."><meta property="og:url" content="https://zgarok.github.io/case-medbrief.html"><meta property="og:image" content="https://zgarok.github.io/img/og-medbrief.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --brand: #1D23CD; --brand-2: #4B50D8; --brand-soft: #E7E8F9;
+  --green: #047857; --green-soft: #ECFDF5; --amber: #B45309; --amber-soft: #FFFBEB;
+  --ink: #0F172A; --ink-1: #1E293B; --ink-2: #64748B; --line: #E2E8F0; --soft: #F5F6FB; --card: #FFFFFF;
+  --font: 'Golos Text', 'PT Root UI', 'Inter', system-ui, -apple-system, sans-serif; --mono: 'Roboto Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--card); color: var(--ink-1); font: 17px/1.6 var(--font); -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 920px; margin: 0 auto; padding: 0 20px; }
+section { padding: 56px 0; border-top: 1px solid var(--line); }
+section:first-of-type { border-top: 0; }
+h1, h2, h3 { color: var(--ink); font-weight: 500; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(32px, 5vw, 48px); line-height: 1.12; letter-spacing: -.01em; }
+h2 { font-size: clamp(24px, 3.4vw, 32px); line-height: 1.2; margin-bottom: 16px; }
+h3 { font-size: 19px; line-height: 1.35; margin-bottom: 6px; }
+p { margin: 0 0 14px; max-width: 68ch; }
+.kicker, .eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--brand); font-weight: 500; margin-bottom: 10px; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+a { color: var(--brand); }
+
+/* Hero */
+.hero { padding: 72px 0 40px; position: relative; overflow: hidden; }
+.hero::before { content: ""; position: absolute; inset: -40% -10% auto; height: 520px; z-index: -1;
+  background: radial-gradient(45% 55% at 20% 30%, rgba(121,125,226,.22), transparent 70%), radial-gradient(40% 50% at 85% 20%, rgba(110,231,183,.22), transparent 70%), radial-gradient(35% 45% at 60% 60%, rgba(232,121,249,.14), transparent 70%); }
+.toplink { display: inline-block; margin-bottom: 28px; font-size: 15px; color: var(--ink-2); text-decoration: none; }
+.toplink:hover { color: var(--brand); }
+.lede { font-size: 20px; line-height: 1.5; color: var(--ink-1); max-width: 60ch; margin-top: 18px; }
+.cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; padding: 12px 18px; border-radius: 99px; background: var(--brand); color: #fff; text-decoration: none; font-weight: 500; }
+.hero-shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 40px; }
+.hero-shots .phone:nth-child(2) { transform: translateY(-18px); }
+
+.proto { margin: 36px auto 0; width: 482px; max-width: 100%; height: 880px; position: relative; }
+.proto-scale { width: 482px; height: 880px; transform-origin: 0 0; position: absolute; left: 0; top: 0; }
+.proto iframe { display: block; border: 0; background: transparent; width: 482px; height: 880px; }
+.proto-note { text-align: center; margin: 4px auto 0; font-size: 14px; color: var(--ink-2); max-width: 46ch; }
+.tldr { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 36px; }
+.tldr div { background: var(--soft); border-radius: 18px; padding: 16px 18px; }
+.tldr b { display: block; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); font-weight: 500; margin-bottom: 4px; }
+
+.gloss { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+.g { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.gt { font-weight: 500; color: var(--ink); }
+.gd { color: var(--ink-2); font-size: 15px; }
+
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0 8px; }
+.metric { border: 1px solid var(--line); border-radius: 20px; padding: 18px; display: grid; gap: 6px; align-content: start; }
+.metric .t { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+.metric .big { font-family: var(--mono); font-size: 30px; line-height: 1.1; color: var(--brand); }
+.metric.ns { background: var(--brand-soft); border-color: transparent; }
+.note { font-size: 14px; color: var(--ink-2); }
+
+.callout { background: var(--soft); border-radius: 18px; padding: 18px 20px; margin: 20px 0; }
+.callout.warn { background: var(--amber-soft); }
+.callout ul { margin: 6px 0 0; padding-left: 20px; }
+.callout li { margin: 4px 0; }
+
+.hyp { display: grid; gap: 10px; }
+.h { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.h .n { font-family: var(--mono); font-size: 14px; color: var(--brand); background: var(--brand-soft); border-radius: 10px; height: 32px; display: grid; place-items: center; }
+.h small { display: block; color: var(--ink-2); font-size: 14px; margin-top: 4px; }
+
+.journey { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 18px 0; }
+.step { background: var(--soft); border-radius: 16px; padding: 14px; font-size: 15px; }
+.step b { display: block; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+.step .pain { display: block; margin-top: 8px; color: var(--amber); font-size: 14px; }
+
+.btable-wrap { overflow-x: auto; margin: 16px 0; }
+.btable { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 15px; }
+.btable th, .btable td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.btable th { font-size: 13px; color: var(--ink-2); font-weight: 500; }
+.btable td.y { color: var(--green); } .btable td.p { color: var(--amber); } .btable td.x { color: var(--ink-2); }
+.btable tr.me td { background: var(--brand-soft); font-weight: 500; }
+
+.alts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.alt { border: 1px solid var(--line); border-radius: 20px; padding: 18px; }
+.alt.pick { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand) inset; }
+.alt .tag { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 99px; background: #F1F5F9; color: var(--ink-2); margin-bottom: 8px; }
+.alt.pick .tag { background: var(--brand); color: #fff; }
+.alt p { font-size: 15px; margin-bottom: 8px; }
+
+.principles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; counter-reset: pr; }
+.principle { background: var(--soft); border-radius: 18px; padding: 16px 18px 16px 58px; position: relative; }
+.principle::before { counter-increment: pr; content: counter(pr); position: absolute; left: 18px; top: 16px; width: 28px; height: 28px; border-radius: 50%; background: var(--brand); color: #fff; font: 500 14px/28px var(--mono); text-align: center; }
+.principle p { font-size: 15px; margin: 0; }
+
+.plain { margin: 20px 0; border: 1px solid var(--line); border-radius: 22px; padding: 16px; overflow-x: auto; background: #fff; }
+.plain svg { display: block; width: 100%; min-width: 720px; height: auto; }
+
+/* Мобильные экраны */
+.phone { margin: 0; }
+.phone img { display: block; width: 100%; height: auto; border-radius: 30px; border: 1px solid #D9DCE6; box-shadow: 0 16px 40px rgba(15,23,42,.10); background: var(--soft); }
+.screens { display: grid; gap: 40px; }
+.screen { display: grid; grid-template-columns: minmax(0, 300px) 1fr; gap: 32px; align-items: center; }
+.screen:nth-child(even) { grid-template-columns: 1fr minmax(0, 300px); }
+.screen:nth-child(even) figure { order: 2; }
+figcaption, .cap { font-size: 15px; color: var(--ink-1); }
+.cap b { display: block; font-size: 19px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+.cap ul { padding-left: 20px; margin: 8px 0 0; }
+.cap li { margin: 4px 0; }
+.wide img { width: 100%; height: auto; border-radius: 20px; border: 1px solid var(--line); display: block; }
+.wide figcaption { margin-top: 10px; color: var(--ink-2); }
+
+.states { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0; }
+.st { border-radius: 16px; padding: 14px; font-size: 15px; }
+.st b { display: block; font-weight: 500; color: var(--ink); }
+.st span { color: var(--ink-1); }
+
+.scope { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+.scope div { border: 1px solid var(--line); border-radius: 18px; padding: 16px; }
+.scope .big { font-family: var(--mono); font-size: 28px; color: var(--ink); line-height: 1.1; }
+.scope span { display: block; font-size: 14px; color: var(--ink-2); margin-top: 4px; }
+
+.tasks { counter-reset: t; display: grid; gap: 8px; margin: 12px 0; padding: 0; list-style: none; }
+.tasks li { counter-increment: t; padding: 12px 14px 12px 50px; position: relative; background: var(--soft); border-radius: 14px; font-size: 15px; }
+.tasks li::before { content: counter(t); position: absolute; left: 14px; top: 12px; width: 24px; height: 24px; border-radius: 50%; background: #fff; color: var(--brand); font: 500 13px/24px var(--mono); text-align: center; }
+
+.res { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.r-card { border-radius: 20px; padding: 18px; background: var(--soft); }
+.r-card .big { font-family: var(--mono); font-size: 28px; color: var(--ink); }
+
+.role-recap { background: var(--ink); color: #E2E8F0; border-radius: 26px; padding: 28px; }
+.role-recap h2 { color: #fff; }
+.role-recap ul { margin: 0; padding-left: 20px; }
+.role-recap li { margin: 8px 0; }
+.disclaimer { font-size: 14px; color: var(--ink-2); margin-top: 22px; }
+footer { padding: 40px 0 64px; }
+
+@media (max-width: 760px) {
+  .tldr, .gloss, .principles, .res { grid-template-columns: 1fr; }
+  .metrics, .alts, .states { grid-template-columns: 1fr; }
+  .scope { grid-template-columns: 1fr 1fr; }
+  .journey { grid-template-columns: 1fr; }
+  .screen, .screen:nth-child(even) { grid-template-columns: 1fr; }
+  .screen figure, .screen:nth-child(even) figure { order: 0; max-width: 300px; margin: 0 auto; }
+  .hero-shots { grid-template-columns: 1fr 1fr; }
+  .hero-shots .phone:nth-child(3) { display: none; }
+  .hero-shots .phone:nth-child(2) { transform: none; }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+<section class="hero">
+  <a class="toplink" href="index.html">← Все работы</a>
+  <div class="eyebrow">Медбриф AI · мобильное приложение · Healthtech и AI · 2026</div>
+  <h1>ИИ-ресепшн, который готовит пациента к визиту, чтобы врач лечил, а не опрашивал</h1>
+  <p class="lede">Пациент в чате передаёт всё о своём здоровье, ИИ собирает из этого краткую карточку для врача, подсказывает, какие анализы сдать заранее, и подбирает специалиста.</p>
+  <div class="proto" id="proto">
+    <div class="proto-scale" id="protoScale">
+      <iframe title="Прототип Медбриф AI" src="medbrief/embed.html" width="482" height="880" loading="eager"></iframe>
+    </div>
+  </div>
+  <p class="proto-note">Это живой прототип: сценарий проигрывается сам, шаги и перезапуск — в меню ⋮ в правом верхнем углу.</p>
+  <div class="tldr">
+    <div><b>Роль</b>Продуктовый дизайнер. Вёл продукт от формулировки проблемы до анимированного прототипа: сценарий, архитектура данных, интерфейс, моушн. Прототип собирал сразу в коде вместе с ИИ, без Фигмы.</div>
+    <div><b>Задача</b>Сократить время приёма на сбор анамнеза и число визитов, после которых пациента отправляют досдавать анализы.</div>
+    <div><b>Что сделал</b>Сценарий из шести шагов от знакомства до назначений врача, модель данных с обезличиванием, мобильный интерфейс, маскот с шестью состояниями, прототип-веб-приложение.</div>
+    <div><b>Результат</b>Прототип готов к юзабилити-тесту с пациентами и врачами. Есть план теста и проектная модель метрик, базовые значения замеряются на пилоте.</div>
+  </div>
+</section>
+
+<section>
+  <div class="kicker">Короткий словарь</div>
+  <h2>Шесть терминов проекта</h2>
+  <div class="gloss">
+    <div class="g"><div class="gt">Карточка для врача</div><div class="gd">Сводка о пациенте, которую врач получает до приёма: повод, показатели, образ жизни, анализы, вопросы.</div></div>
+    <div class="g"><div class="gt">Вывод Медбрифа</div><div class="gd">Предложение ИИ на основе данных пациента, например «сдайте эти анализы до визита». Не назначение.</div></div>
+    <div class="g"><div class="gt">Отсев</div><div class="gd">Данные, которые ИИ сознательно не передаёт врачу, потому что они не относятся к поводу визита.</div></div>
+    <div class="g"><div class="gt">Профиль</div><div class="gd">Отдельное хранилище персональных данных: ФИО, полис, контакты. ИИ к нему доступа не имеет.</div></div>
+    <div class="g"><div class="gt">Навык</div><div class="gd">Набор правил ИИ под конкретный повод визита: что спросить, какие анализы нужны, что важно врачу.</div></div>
+    <div class="g"><div class="gt">Маскот</div><div class="gd">Перламутровое облако, лицо ассистента. Своим движением показывает, что сейчас делает система.</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="kicker">Контекст</div>
+  <h2>Данные о здоровье лежат везде, кроме кабинета врача</h2>
+  <p>Медбриф — мобильное приложение для пациентов, которые регулярно ходят к врачам: хронические состояния, недавно поставленный диагноз, наблюдение. Разделы приложения: главная, мои врачи, клиники, профиль. В центре — персональный чат с ИИ, ему и посвящён кейс.</p>
+  <p>Сейчас путь пациента выглядит так: анализы приходят на почту, в мессенджер или на бумаге, выписки лежат в разных клиниках, свои параметры человек помнит частично. На приёме врач тратит время на одни и те же вопросы, а если важного анализа нет, отправляет досдавать и звать на повторный визит.</p>
+  <div class="journey">
+    <div class="step"><b>Диагноз</b>Пациент получает выписку и не запоминает детали.<span class="pain">Тип и даты быстро забываются</span></div>
+    <div class="step"><b>Анализы</b>Результаты приходят из разных лабораторий.<span class="pain">Файлы разбросаны по почте и чатам</span></div>
+    <div class="step"><b>Поиск врача</b>Выбор по отзывам и расписанию.<span class="pain">Нет фильтра «ведёт мой случай»</span></div>
+    <div class="step"><b>Приём</b>Врач собирает анамнез с нуля.<span class="pain">Половина приёма уходит на опрос</span></div>
+    <div class="step"><b>После</b>Назначения на листке, повторный визит.<span class="pain">«Что мне прописали?» через неделю</span></div>
+  </div>
+  <p>Бизнес-модель: клиника платит за пациента, пришедшего через приложение. Клинике выгодно, чтобы пациент приходил подготовленным: врач принимает больше людей без потери качества, а повторные «пустые» визиты не съедают расписание.</p>
+</section>
+
+<section>
+  <div class="kicker">Проблема и метрики</div>
+  <h2>Всё сводится к тому, насколько подготовлен пациент до приёма</h2>
+  <p>Главная метрика — доля первичных визитов, к которым карточка для врача собрана и отправлена заранее. Две вторичные показывают, что подготовка действительно меняет приём.</p>
+  <div class="metrics">
+    <div class="metric ns"><span class="t">North Star</span><span class="big">≥ 60 %</span><span>визитов с карточкой, отправленной врачу до приёма</span></div>
+    <div class="metric"><span class="t">Приём</span><span class="big">−30 %</span><span>времени приёма на сбор анамнеза</span></div>
+    <div class="metric"><span class="t">Анализы</span><span class="big">+25 %</span><span>первичных визитов без «досдайте анализы»</span></div>
+  </div>
+  <p class="note">Целевые значения — проектная модель на первые три месяца пилота. Базу замеряем на пилоте в одной клинике до включения карточки.</p>
+  <div class="callout warn">
+    <h3>Ограничения, которые задают всю механику</h3>
+    <ul>
+      <li>ИИ не ставит диагнозы и ничего не назначает. Он работает как ресепшн, который знает, что спросить и что подготовить.</li>
+      <li>Персональные данные хранятся отдельно, ИИ видит только обезличенные клинически значимые параметры.</li>
+      <li>В карточку для врача попадает только то, что пациент подтвердил.</li>
+      <li>Правила по анализам и вопросам берутся из клинических рекомендаций и проверяются врачами до запуска.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="kicker">Гипотезы</div>
+  <h2>Четыре гипотезы, каждая привязана к метрике</h2>
+  <p>Отправная точка — путь пациента выше и разбор того, как сейчас устроены похожие решения. Гипотезы ниже — то, что проверяем на тесте прототипа и потом на пилоте.</p>
+  <div class="hyp">
+    <div class="h"><span class="n">H1</span><div>Если анамнез собирать в чате короткими вопросами с готовыми ответами, то пациент дойдёт до конца, потому что это занимает пару минут и не похоже на анкету.<small>Метрика: доля пациентов, завершивших опрос · North Star</small></div></div>
+    <div class="h"><span class="n">H2</span><div>Если ИИ сам достаёт данные из выписки и просит только подтвердить, то пациенту не нужно помнить детали диагноза, и карточка будет полнее.<small>Метрика: заполненность карточки · North Star</small></div></div>
+    <div class="h"><span class="n">H3</span><div>Если до визита показать, каких анализов не хватает для этого повода, то пациент сдаст их заранее, потому что видит конкретный список, а не общий совет.<small>Метрика: визиты без «досдайте анализы»</small></div></div>
+    <div class="h"><span class="n">H4</span><div>Если врач получает карточку из фиксированных блоков с источниками, то он тратит на анамнез меньше времени, потому что не переспрашивает то, что уже подтверждено.<small>Метрика: время приёма на сбор анамнеза</small></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="kicker">Как решают сейчас</div>
+  <h2>Ни один тип решения не связывает пациента и врача до приёма</h2>
+  <p>Разобрал четыре типа продуктов, с которыми пациент уже сталкивается. Таблица — моя оценка типового поведения каждого типа, а не конкретных сервисов.</p>
+  <div class="btable-wrap"><table class="btable">
+    <tr><th>Тип решения</th><th>Собирает анамнез до визита</th><th>Знает, каких анализов не хватает</th><th>Передаёт врачу сводку</th><th>Хранит документы из разных мест</th></tr>
+    <tr><td>Личный кабинет клиники</td><td class="x">нет</td><td class="x">нет</td><td class="p">частично, внутри клиники</td><td class="p">только свои документы</td></tr>
+    <tr><td>Агрегатор записи к врачу</td><td class="x">нет</td><td class="x">нет</td><td class="x">нет</td><td class="x">нет</td></tr>
+    <tr><td>Чат-бот проверки симптомов</td><td class="p">частично, для себя</td><td class="x">нет</td><td class="x">нет</td><td class="x">нет</td></tr>
+    <tr><td>Медкарта-хранилище</td><td class="x">нет</td><td class="x">нет</td><td class="p">по ссылке, без отбора</td><td class="y">да</td></tr>
+    <tr class="me"><td>Медбриф</td><td>да</td><td>да</td><td>да, только нужное</td><td>да</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <div class="kicker">Альтернативы</div>
+  <h2>Выбрал чат, потому что только он умеет задать следующий вопрос</h2>
+  <div class="alts">
+    <div class="alt"><span class="tag">Отказался</span><h3>Анкета перед визитом</h3><p>Проще всего сделать, но одинакова для всех. Длинная форма отпугивает, а короткая не собирает нужное для конкретного диагноза.</p></div>
+    <div class="alt"><span class="tag">Отказался</span><h3>Медкарта с загрузкой файлов</h3><p>Решает хранение, но не подготовку: врач получает папку документов и всё равно ищет нужное сам.</p></div>
+    <div class="alt pick"><span class="tag">Выбрал</span><h3>Чат-ресепшн с навыками</h3><p>Задаёт вопросы под повод визита, достаёт данные из документов, отбирает нужное врачу. Дороже в разработке, но двигает все три метрики.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="kicker">Принципы дизайна</div>
+  <h2>Шесть правил, по которым принимались решения на экранах</h2>
+  <div class="principles">
+    <div class="principle"><h3>Ресепшн, а не врач</h3><p>ИИ спрашивает и готовит. Любой его вывод помечен «не назначение».</p></div>
+    <div class="principle"><h3>Цвет — это источник данных</h3><p>Белая карточка — факт из документа, лиловая — вывод ИИ, мятная — назначение врача, жёлтые метки — «нужно сдать».</p></div>
+    <div class="principle"><h3>Врачу уходит только подтверждённое</h3><p>После распознавания пациент нажимает «Всё верно» или правит. У каждого факта есть источник.</p></div>
+    <div class="principle"><h3>ИИ не видит, кто вы</h3><p>ФИО и полис показаны в карточке как скрытые. Принцип обезличивания виден прямо в интерфейсе.</p></div>
+    <div class="principle"><h3>Ответ одним касанием</h3><p>Где вариантов немного, ответы приходят чипами. Печатать нужно только свой вопрос.</p></div>
+    <div class="principle"><h3>Система показывает, что делает</h3><p>Маскот и цвет угла экрана меняются, когда ИИ думает, читает документ или сохраняет данные.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="kicker">Архитектура данных</div>
+  <h2>Персональные данные и медицинские живут отдельно, а встречаются только у врача</h2>
+  <p>Каждое сообщение пациента проходит через шлюз: персональное уходит в профиль, клинически значимое — в медданные под обезличенным идентификатором. ИИ работает только со вторым слоем и с каждым фактом делает одно из трёх: фиксирует, делает вывод или отсеивает.</p>
+  <div class="plain">
+    <svg viewBox="0 0 900 420" role="img" aria-label="Схема потоков данных Медбрифа">
+      <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#64748B"/></marker></defs>
+      <g font-family="PT Root UI, Inter, sans-serif" font-size="14" fill="#1E293B">
+        <rect x="20" y="150" width="150" height="110" rx="18" fill="#F5F6FB" stroke="#CBD5E1"/>
+        <text x="95" y="182" text-anchor="middle" font-weight="600">Пациент</text>
+        <text x="95" y="206" text-anchor="middle" fill="#64748B" font-size="13">чат, ответы чипами,</text>
+        <text x="95" y="224" text-anchor="middle" fill="#64748B" font-size="13">выписки, анализы</text>
+
+        <rect x="215" y="150" width="140" height="110" rx="18" fill="#fff" stroke="#1D23CD" stroke-width="1.5"/>
+        <text x="285" y="186" text-anchor="middle" font-weight="600">Шлюз</text>
+        <text x="285" y="208" text-anchor="middle" fill="#64748B" font-size="13">разделяет</text>
+        <text x="285" y="226" text-anchor="middle" fill="#64748B" font-size="13">и обезличивает</text>
+
+        <rect x="400" y="30" width="200" height="96" rx="18" fill="#F1F5F9" stroke="#CBD5E1"/>
+        <text x="500" y="60" text-anchor="middle" font-weight="600">Профиль</text>
+        <text x="500" y="82" text-anchor="middle" fill="#64748B" font-size="13">ФИО, полис, контакты</text>
+        <text x="500" y="102" text-anchor="middle" fill="#B45309" font-size="13">ИИ доступа не имеет</text>
+
+        <rect x="400" y="160" width="200" height="96" rx="18" fill="#E7E8F9" stroke="#797DE2"/>
+        <text x="500" y="190" text-anchor="middle" font-weight="600">Медданные · ID пациента</text>
+        <text x="500" y="212" text-anchor="middle" fill="#475569" font-size="13">показатели, диагноз, документы,</text>
+        <text x="500" y="230" text-anchor="middle" fill="#475569" font-size="13">образ жизни, назначения</text>
+
+        <rect x="400" y="290" width="200" height="104" rx="18" fill="#fff" stroke="#797DE2" stroke-dasharray="5 4"/>
+        <text x="500" y="318" text-anchor="middle" font-weight="600">ИИ-ресепшн</text>
+        <text x="500" y="340" text-anchor="middle" fill="#64748B" font-size="13">навыки под повод визита:</text>
+        <text x="500" y="358" text-anchor="middle" fill="#64748B" font-size="13">вопросы, анализы, подбор врача,</text>
+        <text x="500" y="376" text-anchor="middle" fill="#64748B" font-size="13">напоминания</text>
+
+        <rect x="650" y="150" width="220" height="120" rx="18" fill="#ECFDF5" stroke="#A7F3D0"/>
+        <text x="760" y="180" text-anchor="middle" font-weight="600">Карточка для врача</text>
+        <text x="760" y="202" text-anchor="middle" fill="#047857" font-size="13">только подтверждённое</text>
+        <text x="760" y="220" text-anchor="middle" fill="#047857" font-size="13">и относящееся к визиту</text>
+        <text x="760" y="248" text-anchor="middle" fill="#64748B" font-size="13">ФИО добавляется при записи</text>
+
+        <rect x="690" y="320" width="140" height="56" rx="16" fill="#F5F6FB" stroke="#CBD5E1"/>
+        <text x="760" y="353" text-anchor="middle" font-weight="600">Клиника, врач</text>
+
+        <g stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#ar)">
+          <path d="M170 205 H213"/>
+          <path d="M355 185 C380 150 380 80 398 78"/>
+          <path d="M355 205 H398"/>
+          <path d="M500 258 V288"/>
+          <path d="M520 288 V260" />
+          <path d="M600 208 H648"/>
+          <path d="M600 78 C640 78 640 230 648 238" stroke-dasharray="4 4"/>
+          <path d="M760 272 V318"/>
+        </g>
+        <g font-size="12" fill="#64748B">
+          <text x="296" y="128">персональное</text>
+          <text x="214" y="282">клиническое → медданные</text>
+          <text x="612" y="200">сборка</text>
+          <text x="612" y="130">при записи</text>
+        </g>
+        <g font-size="12">
+          <rect x="20" y="300" width="340" height="96" rx="16" fill="#fff" stroke="#E2E8F0"/>
+          <text x="38" y="326" font-weight="600" fill="#1E293B">С каждым фактом ИИ делает одно из трёх</text>
+          <circle cx="44" cy="348" r="5" fill="#4B50D8"/><text x="56" y="352" fill="#1E293B">Фиксирует — в карточку как есть</text>
+          <circle cx="44" cy="368" r="5" fill="#797DE2"/><text x="56" y="372" fill="#1E293B">Делает вывод — предлагает действие</text>
+          <circle cx="44" cy="388" r="5" fill="#94A3B8"/><text x="56" y="392" fill="#1E293B">Отсеивает — не относится к визиту</text>
+        </g>
+      </g>
+    </svg>
+  </div>
+  <p>Навыки — это набор правил под конкретный повод визита: что спросить, какие анализы нужны, какие факты важны врачу. Поводов тысячи, поэтому логика не зашита в интерфейс. Интерфейс одинаково показывает результат любого навыка тремя типами карточек.</p>
+</section>
+
+<section>
+  <div class="kicker">Решение</div>
+  <h2>Сценарий из шести шагов: от знакомства до назначений врача</h2>
+  <p>Весь путь проходит в одном чате. Прототип проигрывает его как сквозную анимацию, по шагам можно переходить из меню в правом верхнем углу.</p>
+  <div class="screens">
+    <div class="screen">
+      <figure class="phone"><img loading="lazy" decoding="async" src="img/medbrief-01.webp" alt="Опрос: рост и вес"></figure>
+      <div class="cap"><b>1. Опрос: базовые параметры за минуту</b>Рост и вес вводятся крупными цифрами со шкалой, курение, нагрузка и питание — чипами. После опроса ИИ показывает, что ушло в карточку, а счётчик в шапке растёт. Пациент сразу видит, ради чего отвечает.</div>
+    </div>
+    <div class="screen">
+      <figure class="phone"><img loading="lazy" decoding="async" src="img/medbrief-02.webp" alt="Распознавание выписки"></figure>
+      <div class="cap"><b>2. Выписка вместо памяти</b>На вопрос о типе диабета пациент отвечает «Не помню», и ИИ просит не вспоминать, а загрузить выписку. Распознанное приходит карточкой:
+        <ul><li>у каждого факта метка «в карточку» и источник документа;</li><li>ФИО и полис показаны скрытыми: ИИ их не видит;</li><li>«Источник» и «Исправить» — врачу уходит только подтверждённое.</li></ul></div>
+    </div>
+    <div class="screen">
+      <figure class="phone"><img loading="lazy" decoding="async" src="img/medbrief-03.webp" alt="Вывод Медбрифа: анализы перед визитом"></figure>
+      <div class="cap"><b>3. Вывод Медбрифа: что сдать до визита</b>Лиловая карточка отличается от фактов цветом и пометкой «не назначение». Внутри чек-лист: чего не хватает, что уже есть и откуда. Действия — напомнить или найти, где сдать. Список строится навыком под конкретный повод визита.</div>
+    </div>
+    <div class="screen">
+      <figure class="phone"><img loading="lazy" decoding="async" src="img/medbrief-04.webp" alt="Подбор врача колодой"></figure>
+      <div class="cap"><b>4. Подбор врача колодой</b>Сверху лучшее совпадение с отметкой 3/3. Свайпом пациент смотрит альтернативы, компромиссы помечены жёлтым: «4,6 км», «вечером только по пятницам». На каждой карточке обещание «получит карточку до приёма» — это и ценность для пациента, и аргумент для клиники.</div>
+    </div>
+    <div class="screen">
+      <figure class="phone"><img loading="lazy" decoding="async" src="img/medbrief-05.webp" alt="Карточка для врача"></figure>
+      <div class="cap"><b>5. Карточка для врача</b>Пациент видит ровно то, что получит врач: ключевые показатели крупными цифрами, повод, образ жизни, анализы в работе, свои вопросы. Отдельный блок «Не передаём врачу» показывает отсев. Отправка — свайпом, а не кнопкой: передача медданных должна быть осознанным действием.</div>
+    </div>
+    <div class="screen">
+      <figure class="phone"><img loading="lazy" decoding="async" src="img/medbrief-06.webp" alt="Назначения врача"></figure>
+      <div class="cap"><b>6. После приёма: «Что мне прописали?»</b>Назначения приходят мятной карточкой «От врача» — третий источник данных со своим цветом. Под ними тумблеры напоминаний. Последняя реплика ИИ открывает следующий цикл: дневник сахара к повторному визиту.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="kicker">Моушн</div>
+  <h2>Маскот показывает, чем сейчас занята система</h2>
+  <p>Лицо ассистента — перламутровое облако без лица и рук: персонаж передаёт состояние движением и не выглядит детским в медицинском контексте. Состояния привязаны к событиям приложения, а правый нижний угол экрана заливается цветом задачи.</p>
+  <div class="states">
+    <div class="st" style="background:#F5F6FB"><b>Покой</b><span>мягкое дыхание, угол еле заметен</span></div>
+    <div class="st" style="background:#F3E8FF"><b>Думает</b><span>форма перетекает, лиловый пульс</span></div>
+    <div class="st" style="background:#E0E7FF"><b>Читает</b><span>волна сверху вниз, сине-лавандовый</span></div>
+    <div class="st" style="background:#FAE8FF"><b>Принял</b><span>короткое сжатие при сохранении в карточку</span></div>
+    <div class="st" style="background:#D1FAE5"><b>Успех</b><span>раскрытие, мятный — карточка отправлена</span></div>
+    <div class="st" style="background:#FEF3C7"><b>Напоминание</b><span>два покачивания, тёплый янтарный</span></div>
+  </div>
+  <figure class="wide"><img loading="lazy" decoding="async" src="img/medbrief-07.webp" alt="Угол маскота по состояниям"><figcaption>Цвет угла по состояниям: покой, думает, читает (сверху), принял, успех, напоминание (снизу). Между задачами цвет перетекает, а не переключается.</figcaption></figure>
+</section>
+
+<section>
+  <div class="kicker">Масштаб работы</div>
+  <h2>Не шесть экранов, а система состояний</h2>
+  <div class="scope">
+    <div><span class="big">6</span><span>шагов сценария в одном чате</span></div>
+    <div><span class="big">3</span><span>типа карточек по источнику данных</span></div>
+    <div><span class="big">6</span><span>состояний маскота, привязанных к событиям</span></div>
+    <div><span class="big">3</span><span>размера маскота: 180, 52 и 44 px</span></div>
+  </div>
+  <p>Отдельно продуманы пограничные случаи: пациент не помнит диагноз, ИИ ошибся при распознавании, у врача нет всех совпадений, данные не относятся к визиту, запись уже подтверждена. Прототип работает как веб-приложение с главного экрана телефона, его можно пройти руками.</p>
+</section>
+
+<section>
+  <div class="kicker">Тестирование</div>
+  <h2>Следующий шаг — модерируемый тест прототипа на телефоне</h2>
+  <p>Тестируем две стороны: пациентов, которые проходят сценарий, и врачей, которые читают итоговую карточку. Респондентов подбираем среди взрослых с хроническими состояниями или диагнозом, поставленным в последний год, и среди эндокринологов и терапевтов, которые ведут таких пациентов.</p>
+  <ol class="tasks">
+    <li>Пройти опрос и рассказать, куда ушли ответы.</li>
+    <li>Загрузить выписку и проверить, что ИИ прочитал верно.</li>
+    <li>Найти, каких анализов не хватает, и поставить напоминание.</li>
+    <li>Выбрать врача и объяснить, почему этого.</li>
+    <li>Для врача: по карточке за минуту назвать повод визита, ключевые показатели и чего ещё ждём.</li>
+  </ol>
+  <div class="callout">
+    <h3>Критерии успеха</h3>
+    <ul>
+      <li>Пациенты завершают задачи 1–4 без подсказок модератора.</li>
+      <li>Пациенты отличают вывод ИИ от факта из документа и от назначения врача.</li>
+      <li>Врач находит повод, показатели и недостающие анализы в карточке без прокрутки назад.</li>
+      <li>Никто из участников не воспринимает вывод Медбрифа как диагноз.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="kicker">Результаты</div>
+  <h2>Проектная модель эффекта и что будем мерить</h2>
+  <div class="res">
+    <div class="r-card"><span class="big">≥ 60 %</span><p>визитов с карточкой до приёма — North Star пилота.</p></div>
+    <div class="r-card"><span class="big">−30 %</span><p>времени приёма на сбор анамнеза — замер хронометражем на пилоте.</p></div>
+    <div class="r-card"><span class="big">+25 %</span><p>первичных визитов без отправки досдавать анализы.</p></div>
+    <div class="r-card"><span class="big">—</span><p>Подтверждённых данных после запуска пока нет. Значения выше — модель, которую проверяем на пилоте.</p></div>
+  </div>
+</section>
+
+<footer>
+  <div class="role-recap">
+    <h2>Что здесь моё</h2>
+    <ul>
+      <li>Сформулировал проблему и метрики через подготовку пациента к приёму.</li>
+      <li>Спроектировал сценарий из шести шагов и пограничные случаи.</li>
+      <li>Придумал модель данных с разделением персональных и медицинских данных и тремя действиями ИИ.</li>
+      <li>Ввёл цветовую систему карточек по источнику данных.</li>
+      <li>Собрал интерфейс и анимированный прототип сразу в коде вместе с ИИ, без отрисовки в Фигме.</li>
+      <li>Интегрировал маскота и привязал его состояния к событиям продукта.</li>
+    </ul>
+  </div>
+  <p><a class="toplink" href="index.html" style="margin:24px 0 0">← Все работы</a></p>
+  <p class="disclaimer">Клиники, врачи, значения анализов и назначения в прототипе вымышлены и показывают сценарий. Перед реальным запуском медицинская логика навыков проверяется по клиническим рекомендациям и врачами.</p>
+</footer>
+
+</main>
+<script>
+(function () {
+  var box = document.getElementById('proto'), sc = document.getElementById('protoScale');
+  function fit() {
+    var k = Math.min(1, box.clientWidth / 482);
+    sc.style.transform = 'scale(' + k + ')';
+    sc.style.left = Math.max(0, (box.clientWidth - 482 * k) / 2) + 'px';
+    box.style.height = Math.round(880 * k) + 'px';
+  }
+  fit(); window.addEventListener('resize', fit);
+})();
+</script>
+</body>
+</html>

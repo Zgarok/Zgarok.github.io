@@ -124,7 +124,7 @@ svg.s16 { width: 16px; height: 16px; } svg.s24 { width: 24px; height: 24px; }
 .orb.s { --sz: 28px; }
 
 /* Лента */
-.feed { flex: 1; min-height: 0; min-width: 0; overflow-y: auto; padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 10px; scrollbar-width: none; }
+.feed { flex: 1; min-height: 0; min-width: 0; overflow-y: auto; overflow-x: hidden; padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 10px; scrollbar-width: none; }
 .feed::-webkit-scrollbar { display: none; }
 .feed > * { flex-shrink: 0; }
 .hero { margin: auto 0; display: grid; justify-items: center; gap: 18px; text-align: center; padding: 24px 0; transition: opacity .5s, transform .6s cubic-bezier(.4,0,.2,1); }
@@ -187,8 +187,8 @@ svg.s16 { width: 16px; height: 16px; } svg.s24 { width: 24px; height: 24px; }
 .tag.have { background: var(--mint-2); color: var(--mint-ink); }
 .row.private .k { color: var(--ink-2); }
 .row.private .v { color: var(--ink-3); letter-spacing: .1em; }
-.card-actions { padding: 12px 18px 16px; display: flex; gap: 8px; align-items: center; }
-.ghost { height: 32px; padding: 0 12px; border-radius: 99px; border: 0; background: #F1F5F9; color: var(--ink-1); font-size: 13px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.card-actions { padding: 12px 14px 14px; display: flex; gap: 6px; align-items: center; }
+.ghost { height: 32px; padding: 0 10px; border-radius: 99px; border: 0; background: #F1F5F9; color: var(--ink-1); font-size: 13px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
 .btn { height: 44px; padding: 0 18px; border-radius: 99px; border: 0; font-size: 15px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: background .25s, color .25s; }
 .btn.primary { background: var(--accent); color: #fff; }
 .btn.primary:hover { background: var(--accent-2); }
@@ -930,7 +930,7 @@ var Mascot = (function () {
         '<div class="row"><span class="k">Глюкоза натощак</span><span class="v warn">7,4 ммоль/л</span><span class="sub">референс лаборатории <span class="num">4,1–5,9</span></span><span class="tag in">в карточку</span></div>' +
         '<div class="row"><span class="k">Гликированный гемоглобин</span><span class="v warn">7,1 %</span><span class="sub">референс лаборатории <span class="num">4,0–6,0</span></span><span class="tag in">в карточку</span></div>' +
         '<div class="row private"><span class="k">ФИО, полис, адрес</span><span class="v">••••••</span><span class="sub">в профиле, ИИ их не видит</span><span class="tag hide">' + ICON.lock + 'скрыто</span></div>' +
-        '</div><div class="card-actions"><button class="ghost">' + ICON.doc + 'Источник</button><button class="ghost">' + ICON.pen + 'Исправить</button><span class="grow"></span><button class="btn primary" id="okBtn" style="height:36px;font-size:14px">Всё верно</button></div></section>'));
+        '</div><div class="card-actions"><button class="ghost">' + ICON.doc + 'Источник</button><button class="ghost">' + ICON.pen + 'Исправить</button><span class="grow"></span><button class="btn primary" id="okBtn" style="height:36px;font-size:14px;padding:0 14px">Всё верно</button></div></section>'));
       await r.wait(1600);
       await r.tap($('okBtn'));
       var acts = card.querySelector('.card-actions');
