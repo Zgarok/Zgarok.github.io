@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Как я собрал дизайн-систему Project 0 с нуля сразу в коде: 125 токенов со светлой и тёмной темой, 75 компонентов, описание каждого и Storybook, который публикуется сам."><link rel="canonical" href="https://zgarok.github.io/case-project-0.html"><meta property="og:type" content="website"><meta property="og:locale" content="ru_RU"><meta property="og:site_name" content="Сергей Степанов — продуктовый дизайнер"><meta property="og:title" content="Project 0: дизайн-система с нуля сразу в коде — Сергей Степанов"><meta property="og:description" content="Как я собрал дизайн-систему Project 0 с нуля сразу в коде: 125 токенов со светлой и тёмной темой, 75 компонентов, описание каждого и Storybook, который публикуется сам."><meta property="og:url" content="https://zgarok.github.io/case-project-0.html"><meta property="og:image" content="https://zgarok.github.io/img/og-cover.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="favicon.svg" type="image/svg+xml">
+<title>Project 0: дизайн-система с нуля сразу в коде — Сергей Степанов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--brand:#1D23CD;--brand-soft:#E7E8F9;--ink:#0F172A;--ink-2:#475569;--ink-3:#64748B;--soft:#F5F6FB;--line:#E2E8F0;--green:#047857;--green-soft:#ECFDF5;--amber:#B45309;--amber-soft:#FFFBEB}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Golos Text',system-ui,sans-serif;color:var(--ink);background:#fff;line-height:1.55;font-size:17px}
+.wrap{max-width:980px;margin:0 auto;padding:0 24px}
+a{color:var(--brand)}
+.back{display:inline-block;margin:28px 0 0;font-size:15px;text-decoration:none}
+.hero{padding:40px 0 28px}
+.eyebrow{font-size:14px;font-weight:600;color:var(--brand);letter-spacing:.04em;text-transform:uppercase}
+h1,h2,h3{font-weight:500}
+h1{font-size:44px;line-height:1.12;margin:12px 0 16px;letter-spacing:-.01em}
+.lede{font-size:20px;color:var(--ink-2);max-width:760px;margin:0}
+.tldr{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:28px 0 8px}
+.tldr div{background:#fff;padding:20px 22px}
+.tldr b{display:block;font-size:13px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;font-weight:600}
+section{padding:44px 0 8px}
+.kicker{font-size:14px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em}
+h2{font-size:30px;line-height:1.2;margin:8px 0 16px}
+h3{font-size:20px;margin:28px 0 8px}
+p{margin:0 0 14px;max-width:780px}
+.gloss{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.g{background:var(--soft);border-radius:12px;padding:14px 16px;font-size:15px}
+.g .gt{font-weight:600}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
+.metric{border:1px solid var(--line);border-radius:14px;padding:18px}
+.metric .n{font-size:34px;font-weight:700;color:var(--brand);line-height:1}
+.metric .l{font-size:14px;color:var(--ink-2);margin-top:8px}
+.callout{background:var(--brand-soft);border-radius:14px;padding:18px 20px;margin:18px 0;max-width:820px}
+.callout.warn{background:var(--amber-soft)}
+figure{margin:22px 0 10px;border:1px solid var(--line);border-radius:16px;padding:22px;background:#fff}
+figcaption{font-size:14px;color:var(--ink-2);margin-top:14px}
+figcaption b{color:var(--ink)}
+/* bars */
+.bars{display:grid;grid-template-columns:minmax(150px,230px) 1fr 40px;gap:8px 12px;align-items:center;font-size:15px}
+.bars .lab{color:var(--ink)}
+.bars .track{height:14px;border-radius:0 4px 4px 0;background:transparent}
+.bars .bar{height:14px;border-radius:0 4px 4px 0;background:var(--brand)}
+.bars .bar.muted{background:#b9bccb}
+.bars .bar.ok{background:var(--green)}
+.bars .v{font-variant-numeric:tabular-nums;color:var(--ink-2);text-align:right}
+.bars .row{display:contents}
+.bars .row:hover .lab{color:var(--brand)}
+/* flow */
+.flow{display:grid;grid-template-columns:1fr 24px 1.1fr 24px 1.1fr 24px 1.2fr;align-items:stretch;gap:0}
+.col{display:flex;flex-direction:column;gap:8px}
+.col h4{margin:0 0 4px;font-size:13px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.node{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;background:#fff}
+.node.main{border-color:var(--brand);background:var(--brand-soft)}
+.node .c{float:right;font-weight:600;color:var(--brand);font-variant-numeric:tabular-nums}
+.node.ok{border-color:var(--green);background:var(--green-soft)}
+.node.ok .c{color:var(--green)}
+.arrow{display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:18px}
+.loop{margin-top:14px;border:1px dashed var(--green);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--ink-2)}
+/* cluster */
+.cluster{display:grid;grid-template-columns:1fr 60px 1fr;align-items:center}
+.reqs{display:flex;flex-direction:column;gap:6px}
+.req{font-size:13.5px;background:var(--soft);border-radius:8px;padding:7px 10px}
+.req i{font-style:normal;color:var(--ink-3);font-size:12px;display:block}
+.outs{display:flex;flex-direction:column;gap:10px}
+.out{border-radius:10px;padding:12px 14px;font-size:14.5px;border:1px solid var(--line)}
+.out.dev{border-color:var(--brand);background:var(--brand-soft)}
+.out.ok{border-color:var(--green);background:var(--green-soft)}
+.out.pause{border-color:#FDE68A;background:var(--amber-soft)}
+.fan{color:var(--ink-3);font-size:28px;text-align:center}
+/* lag */
+.lag{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.lagbox{border-radius:14px;padding:18px;background:var(--soft)}
+.lagbox .big{font-size:40px;font-weight:700;line-height:1}
+.dots{display:flex;flex-wrap:wrap;gap:4px;margin:12px 0}
+.dot{width:14px;height:14px;border-radius:4px;background:#c9ccd8}
+.dot.d0{background:var(--green)} .dot.d1{background:#7cc8a0}
+.dot.d2{background:#f0c36a} .dot.d6{background:#e59a4b} .dot.d8{background:#d9703a} .dot.d9{background:#c4502b}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend .dot{width:10px;height:10px}
+/* mock row */
+.mock{border:1px solid var(--line);border-radius:12px;overflow-x:auto;font-size:13px}
+.mock .bar{background:#f0f1f4;padding:8px 12px;display:flex;gap:6px;align-items:center}
+.mock .bar i{width:10px;height:10px;border-radius:50%;display:inline-block;background:#ff5f57}
+.mock .bar i:nth-child(2){background:#febc2e}.mock .bar i:nth-child(3){background:#28c840}
+.mock .bar .url{margin-left:10px;color:var(--ink-3)}
+.mock table{border-collapse:collapse;width:100%}
+.mock th,.mock td{border-bottom:1px solid var(--line);padding:8px 7px;text-align:left;vertical-align:top}
+.mock th{background:var(--soft);font-weight:600;color:var(--ink-2);white-space:nowrap}
+.pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;white-space:nowrap}
+.p-dev{background:var(--brand-soft);color:var(--brand)} .p-ok{background:var(--green-soft);color:var(--green)} .p-q{background:var(--amber-soft);color:var(--amber)}
+.principles{counter-reset:p;display:grid;gap:14px;margin-top:10px}
+.principle{border-left:3px solid var(--brand);padding:4px 0 4px 18px}
+.principle b{display:block;font-size:18px;margin-bottom:4px}
+.res{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+.r-card{border:1px solid var(--line);border-radius:14px;padding:18px}
+.r-card .big{font-size:32px;font-weight:700;color:var(--green);line-height:1}
+.r-card p{font-size:14.5px;color:var(--ink-2);margin:8px 0 0}
+.role-recap{background:var(--soft);border-radius:16px;padding:22px 24px;margin:40px 0 16px}
+.disclaimer{font-size:13.5px;color:var(--ink-3);max-width:820px;margin:0 0 40px}
+@media (max-width:760px){
+ h1{font-size:32px}.tldr,.gloss,.lag,.res{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}
+ .flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg);height:28px}
+ .cluster{grid-template-columns:1fr}.fan{transform:rotate(90deg)}
+ .bars{grid-template-columns:120px 1fr 32px;font-size:14px}
+ .mock{overflow-x:auto}.mock table{min-width:720px}
+}
+.shot{margin:0;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.shot img{display:block;width:100%;height:auto}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.pipe{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.pipe .node{flex:1 1 0;min-width:0;font-size:13.5px}
+.pipe .arrow{flex:0 0 18px}
+code{font-family:'Roboto Mono',ui-monospace,monospace;font-size:.88em;background:var(--soft);padding:1px 5px;border-radius:5px}
+.doc{font-size:14px;background:var(--soft);border-radius:12px;padding:16px 18px}
+.doc h5{margin:0 0 8px;font-size:13px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.doc ul{margin:0;padding-left:18px}
+@media (max-width:760px){.two{grid-template-columns:1fr}.pipe{flex-direction:column}.pipe .arrow{transform:rotate(90deg);height:20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="index.html">← Все работы</a>
+
+<header class="hero">
+  <div class="eyebrow">Project 0 · собственная дизайн-система · 2026</div>
+  <h1>Дизайн-система с нуля сразу в коде: от токенов до Storybook</h1>
+  <p class="lede">Я хотел научиться вести компоненты дизайн-системы не только в Figma, но и в Storybook и в коде. Поэтому собрал свою систему так, как её получает разработчик: токены в одном файле, компоненты на React, описание каждого и Storybook, который публикуется сам после каждого изменения.</p>
+  <div class="tldr">
+    <div><b>Роль</b>Автор системы. Решения по токенам, структуре, документации и приёмке мои. Код писался вместе с ИИ-агентом Claude Code, каждый компонент я проверял вручную.</div>
+    <div><b>Задача</b>Пройти весь путь дизайн-системы самому: от названий токенов до компонента, который разработчик берёт из репозитория, а не перерисовывает из макета.</div>
+    <div><b>Что сделал</b>125 токенов в формате W3C со светлой и тёмной темой, 75 компонентов в пяти слоях, 74 описания компонентов, генерацию историй и автопубликацию Storybook.</div>
+    <div><b>Результат</b>Работающий <a href="https://zgarok.github.io/project-0/">Storybook ↗</a> с 230 историями и переключателем Light / Dark / System. Первая версия и вторая итерация опубликованы 31 октября и 1 ноября 2026.</div>
+  </div>
+</header>
+
+<section>
+  <div class="kicker">Масштаб</div>
+  <h2>Что внутри системы</h2>
+  <div class="metrics">
+    <div class="metric"><div class="n">125</div><div class="l">токенов в одном файле, у цветов значения для двух тем</div></div>
+    <div class="metric"><div class="n">75</div><div class="l">компонентов: от кнопки до панели трассировки агентов</div></div>
+    <div class="metric"><div class="n">230</div><div class="l">историй в Storybook, у каждого компонента своя страница</div></div>
+    <div class="metric"><div class="n">74</div><div class="l">описания компонентов: когда использовать, токены, состояния</div></div>
+  </div>
+  <p>Цифры посчитаны по репозиторию <a href="https://github.com/Zgarok/project-0">Zgarok/project-0 ↗</a> и по собранному Storybook. Кроме компонентов, в системе 78 иконок из Tabler Icons и 20 логотипов сервисов, у каждого логотипа записан источник.</p>
+</section>
+
+<section>
+  <div class="kicker">Как устроено</div>
+  <h2>Один источник правды и цепочка до публикации</h2>
+  <p>Главное правило: значение живёт в одном месте. Цвет, отступ или радиус меняются в <code>tokens.json</code>, а дальше изменение само доходит до CSS, компонентов и опубликованного Storybook.</p>
+  <figure>
+    <div class="pipe">
+      <div class="node main"><b>tokens.json</b><br>125 токенов, формат W3C Design Tokens</div>
+      <div class="arrow">→</div>
+      <div class="node"><b>tokens.css</b><br>CSS-переменные генерируются из JSON</div>
+      <div class="arrow">→</div>
+      <div class="node"><b>Компоненты</b><br>React + TypeScript на токенах</div>
+      <div class="arrow">→</div>
+      <div class="node"><b>Описание</b><br>файл на каждый компонент</div>
+      <div class="arrow">→</div>
+      <div class="node"><b>Storybook 10</b><br>истории собирает скрипт</div>
+      <div class="arrow">→</div>
+      <div class="node ok"><b>GitHub Pages</b><br>публикация после каждого пуша</div>
+    </div>
+    <figcaption><b>Путь изменения от токена до опубликованной страницы.</b> Сборку и публикацию Storybook запускает GitHub Actions на каждый пуш в основную ветку, руками ничего не выкладывается.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="kicker">Шаг 1 · Токены</div>
+  <h2>Токены называют роль, а не цвет</h2>
+  <p>Токены разложены по группам: цвет, типографика, отступы, радиусы, размеры, тени, фокус, иконки, прозрачность, а также отдельные палитры для графиков и подсветки кода. Названия описывают назначение: <code>color-text-secondary</code>, <code>color-bg-surface</code>, <code>space-control-padding-md</code>. Поэтому компонент не знает, какого цвета он будет, а знает только, какую роль играет элемент.</p>
+  <p>У каждого цветового токена сразу два значения, для светлой и тёмной темы. Тема переключается одним атрибутом на странице, а без него система следует настройке операционной системы.</p>
+  <figure>
+    <div class="shot"><img src="img/p0-tokens.webp" width="1600" height="776" alt="Страница цветовых токенов в Storybook: название, назначение, образец и значения для светлой и тёмной темы" loading="lazy"></div>
+    <figcaption><b>Цветовые токены текста в Storybook.</b> У каждого токена назначение и значения для двух тем. В описание записан контраст: например, третичный текст я поднял с прозрачности .45 до .55, чтобы контраст вырос с 3,36:1 до 4,74:1 и прошёл порог WCAG AA для обычного текста в 4,5:1.</figcaption>
+  </figure>
+  <p>Контраст записан прямо в описании 11 цветовых токенов. Цвета для графиков вынесены в отдельную группу с пометкой «только для визуализации данных, никогда в интерфейсе», а заливка, у которой контраст на белом 2,19:1, помечена как «никогда для текста и не единственный признак».</p>
+</section>
+
+<section>
+  <div class="kicker">Шаг 2 · Слои</div>
+  <h2>Пять слоёв, и самый большой — ИИ-компоненты</h2>
+  <figure>
+    <div class="bars" role="img" aria-label="Компоненты по слоям">
+      <div class="row"><span class="lab">Основы (цвета, шрифты, отступы, иконки, логотипы)</span><div class="track"><div class="bar muted" style="width:6.1%"></div></div><span class="v">2</span></div>
+      <div class="row"><span class="lab">Атомы</span><div class="track"><div class="bar" style="width:42.4%"></div></div><span class="v">14</span></div>
+      <div class="row"><span class="lab">Молекулы</span><div class="track"><div class="bar" style="width:33.3%"></div></div><span class="v">11</span></div>
+      <div class="row"><span class="lab">Организмы</span><div class="track"><div class="bar" style="width:45.5%"></div></div><span class="v">15</span></div>
+      <div class="row"><span class="lab">ИИ-компоненты</span><div class="track"><div class="bar" style="width:100%"></div></div><span class="v">33</span></div>
+    </div>
+    <figcaption><b>Разделы Storybook по числу компонентов.</b> ИИ-компоненты делятся на четыре группы: агенты — 15, чат — 8, мониторинг работы агентов — 6, согласования — 4. В «Основах» две страницы: токены и логотипы.</figcaption>
+  </figure>
+  <p>Базовые слои — то, без чего не обойдётся ни один продукт: кнопки, поля, переключатели, меню, таблица, диалоги. ИИ-слой — интерфейсы, которые нужны продуктам с агентами: агент спрашивает разрешение перед действием, показывает план из шагов, вызывает инструменты, а пользователь видит, сколько времени и токенов ушло на каждый шаг.</p>
+  <figure>
+    <div class="shot"><img src="img/p0-table.webp" width="2000" height="770" alt="Компонент DataTable: таблица аккаунтов со статусами, владельцами и суммами" loading="lazy"></div>
+    <figcaption><b>Организм DataTable.</b> Таблица собрана из атомов системы: чекбоксы, бейджи статусов, аватары.</figcaption>
+  </figure>
+  <div class="two">
+    <figure><div class="shot"><img src="img/p0-plan.webp" width="969" height="939" alt="Компонент AgentPlan: план агента из пяти шагов с инструментами и кнопкой запуска" loading="lazy"></div><figcaption><b>AgentPlan.</b> Агент показывает план до запуска: шаги можно переставить, переименовать или добавить.</figcaption></figure>
+    <figure><div class="shot"><img src="img/p0-trace.webp" width="2000" height="900" alt="Компонент TraceWaterfall в тёмной теме: шкала времени вызовов агентов и инструментов" loading="lazy"></div><figcaption><b>TraceWaterfall в тёмной теме.</b> Кто из агентов что делал и сколько это заняло, с длительностью, стоимостью и числом вызовов сверху.</figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <div class="kicker">Шаг 3 · Документация</div>
+  <h2>У каждого компонента есть описание, по которому его можно собрать заново</h2>
+  <p>Описания лежат рядом с кодом, по одному файлу на компонент, всего 74. Описание отвечает на вопросы дизайнера и разработчика: когда компонент нужен, а когда лучше взять другой, из каких токенов он собран, как ведёт себя в каждом состоянии и что нужно для доступности.</p>
+  <div class="two">
+    <div class="doc">
+      <h5>Пример: Button</h5>
+      <ul>
+        <li><b>Когда не использовать:</b> для перехода на другую страницу нужна ссылка, чтобы её можно было открыть в новой вкладке.</li>
+        <li><b>Варианты:</b> primary, secondary, ghost, destructive. У каждого перечислены токены фона, hover и текста. В группе не больше одной primary.</li>
+        <li><b>Размеры:</b> 24, 28 и 32 px, у каждого свои токены отступа и иконки.</li>
+        <li><b>Состояния:</b> hover, active, focus только с клавиатуры, disabled, loading — подпись остаётся читаемой, фокус сохраняется.</li>
+        <li><b>Доступность:</b> у кнопки без подписи обязателен aria-label.</li>
+      </ul>
+    </div>
+    <div class="doc">
+      <h5>Что повторяется в описаниях</h5>
+      <ul>
+        <li>Раздел «Доступность» — в 18 описаниях, «Поведение» — в 12, «Клавиатура» — в 4.</li>
+        <li>Таблица «часть компонента → токен»: видно, откуда берётся каждое значение.</li>
+        <li>«Решения и отклонения»: что в компоненте сделано иначе, чем у референса, и почему.</li>
+        <li>Список свойств компонента для разработчика.</li>
+      </ul>
+    </div>
+  </div>
+  <figure>
+    <div class="shot"><img src="img/p0-button.webp" width="1996" height="441" alt="Обзор кнопок в светлой и тёмной теме: варианты, размеры, иконки и состояния" loading="lazy"></div>
+    <figcaption><b>Страница Button в Storybook, светлая и тёмная тема.</b> Варианты, размеры, кнопки с иконками и состояния загрузки и disabled на одном экране.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="kicker">Шаг 4 · Темы</div>
+  <h2>Тёмная тема не рисуется отдельно</h2>
+  <p>В Storybook есть переключатель Light / Dark / System. Он только меняет атрибут на странице, а значения подставляют токены. В CSS компонентов нет ни одного правила под тёмную тему, значения для неё подставляют токены. Поэтому новая тема — это правка одного файла.</p>
+  <figure>
+    <div class="shot"><img src="img/p0-approval.webp" width="2000" height="576" alt="Компонент ApprovalCard в светлой и тёмной теме: агент спрашивает разрешение отправить рассылку" loading="lazy"></div>
+    <figcaption><b>ApprovalCard в двух темах.</b> Агент спрашивает разрешение перед действием и показывает уровень риска. Deny — по Esc, Approve — по ⌘↵; если задан срок, внутри кнопки Approve идёт кольцо обратного отсчёта, и оно останавливается, пока курсор над карточкой.</figcaption>
+  </figure>
+  <figure>
+    <div class="shot"><img src="img/p0-toolcall.webp" width="2000" height="533" alt="Компонент ToolCall в двух темах: список вызовов инструментов с длительностью и ошибкой" loading="lazy"></div>
+    <figcaption><b>ToolCall в двух темах.</b> Вызовы инструментов агента: что вызвано, с каким запросом, сколько заняло и какой упал с ошибкой.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="kicker">Шаг 5 · Автоматизация</div>
+  <h2>Истории и публикация не делаются руками</h2>
+  <p>Компоненты сначала собирались как превью с описанием. Дальше отдельный скрипт превращал каждое превью в страницу Storybook: историю, демо и описание, а из реальных свойств компонента — набор вариантов на странице. Так 75 компонентов получили 230 историй без ручного заполнения.</p>
+  <p>После каждого пуша в основную ветку GitHub Actions собирает Storybook и выкладывает его на GitHub Pages. Опубликованная версия всегда совпадает с кодом в репозитории.</p>
+  <h3>Две итерации</h3>
+  <p><b>31 октября.</b> Первая версия: токены, компоненты, описания и Storybook с публикацией. Следом добавлен ещё один компонент, журнал действий агента.</p>
+  <p><b>1 ноября.</b> Вторая итерация: 11 новых компонентов, в том числе KPI-график и выбор интеграций. Анимацию подогнал под тайминги референсов. Превью получили серую подложку, а кнопку повтора анимации я сделал иконкой в углу.</p>
+</section>
+
+<section>
+  <div class="kicker">Итог</div>
+  <h2>Что этот проект дал</h2>
+  <div class="res">
+    <div class="r-card"><div class="big">1 файл</div><p>с токенами, из которого получаются CSS, обе темы и всё, что видно в Storybook.</p></div>
+    <div class="r-card"><div class="big">75 / 74</div><p>компонентов и их описаний: у каждого компонента есть документ с токенами, состояниями и правилами.</p></div>
+    <div class="r-card"><div class="big">0 ручных</div><p>шагов публикации: Storybook собирается и выкладывается сам после каждого пуша.</p></div>
+  </div>
+  <div class="callout">Главный вывод для работы в команде: если дизайн-система начинается с токенов и описаний, ИИ-агент быстро собирает компоненты по правилам. Моя работа смещается от отрисовки к решениям: как назвать роль, какой контраст допустим, где компонент отклоняется от референса, и к приёмке результата.</div>
+  <p>Дальше — связать цепочку «дизайн-система → Storybook → GitHub» с рабочими проектами, чтобы разработчик брал компоненты из кода, а не перерисовывал их из макета. Иконки и логотипы уже лежат в репозитории отдельно в SVG для Figma.</p>
+</section>
+
+<div class="role-recap">
+  <b>Что здесь моё.</b> Структура системы и слоёв, правила именования токенов, значения для двух тем и проверка контраста, шаблон описания компонента, решения и отклонения от референсов, приёмка каждого компонента. Код компонентов, скрипт генерации историй и настройку публикации писал ИИ-агент Claude Code по моим постановкам: все коммиты в репозитории сделаны в соавторстве с ним.
+</div>
+<p style="margin:0 0 24px"><a href="https://zgarok.github.io/project-0/">Открыть Storybook ↗</a> · <a href="https://github.com/Zgarok/project-0">Репозиторий на GitHub ↗</a></p>
+<a class="back" href="index.html" style="margin:0 0 48px">← Все работы</a>
+</div>
+</body>
+</html>
